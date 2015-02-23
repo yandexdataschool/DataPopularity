@@ -1,11 +1,12 @@
+from __future__ import division, print_function, absolute_import
+
 __author__ = 'mikhail91'
 
 ######################
-###Version 0.1     ###
+###Version 0.2     ###
 ######################
 ###Using REP v0.5  ###
 ######################
-from __future__ import division, print_function, absolute_import
 
 import numpy as np
 import pandas as pd
