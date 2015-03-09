@@ -29,9 +29,10 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 from rep.classifiers import XGBoostClassifier
+from .DataBase import DataBase
 
 
-class DataPopularityEstimator(object):
+class DataPopularityEstimator(DataBase):
     """
     Data sets popularity estimator.
     XGBoost tree booster is used.
@@ -46,79 +47,11 @@ class DataPopularityEstimator(object):
     """
 
     def __init__(self, source_path=None, data=None, nb_of_weeks=104):
-        if source_path != None:
-            ext = source_path.split('.')[-1]
-            if ext=='csv':
-                try:
-                    self.data = pd.read_csv(source_path)
-                except:
-                    print ("Can not open file.")
-            elif ext=='xls' or ext=='xlsx':
-                try:
-                    self.data = pd.read_excel(source_path)
-                except:
-                    print ("Can not open file.")
-        else:
-            self.data = data
-
-        self.periods = [str(i) for i in range(1,nb_of_weeks+1)]
-        self._fix_columns()
-        self._data_transform()
+        super(DataPopularityEstimator, self).__init__(source_path=source_path, data=data, nb_of_weeks=nb_of_weeks)
 
         self.train_report = None
         self.popularity = None
 
-    def _rename(self, x):
-        """
-        :param str or int x: column's name
-        :return: str renamed column's name
-        """
-        return re.sub('\W', '_', str(x))
-
-    def _fix_columns(self):
-        """
-        Rename data columns
-        :return: list[str] renamed column names
-        """
-        self.data.columns = map(self._rename, self.data.columns)
-        return self.data.columns
-
-    def _data_transform(self):
-        """
-        Transform data
-        :return: pandas.DataFrame transformed data
-        """
-        data1 = self.data.copy()
-        data2 = self.data.copy()
-        for i in range(0, len(self.periods)):
-            if i!=0:
-                data1[self.periods[i]] = self.data[self.periods[i]] - self.data[self.periods[i-1]]
-
-        for i in range(0, len(self.periods)):
-            k = len(self.periods)-1-i
-            data2[self.periods[i]] = data1[self.periods[k]]
-
-        for i in range(0, len(self.periods)):
-            if i!=0:
-                data2[self.periods[i]] = data2[self.periods[i]] + data2[self.periods[i-1]]
-        self.data = data2
-        return self.data
-
-    def _check_columns(self):
-        """
-        Check whether all needed data columns are presence
-        :return: 1 if all needed columns are presence in the train data. Otherwise, rise assertion.
-        """
-        cols_needed = pd.core.index.Index([u'Name', u'Configuration', u'ProcessingPass', u'FileType',
-                                           u'Type', u'Creation_week', u'NbLFN', u'LFNSize', u'NbDisk', u'DiskSize', u'NbTape',
-                                           u'TapeSize', u'NbArchived', u'ArchivedSize', u'Nb_Replicas', u'Nb_ArchReps',
-                                           u'Storage', u'FirstUsage', u'LastUsage', u'Now'])
-        cols = self.data.columns
-        intersect = cols.intersection(cols_needed)
-        diff_cols = cols_needed.diff(intersect)
-
-        assert len(diff_cols)==0, str(["Please, add following columns to the data: ", list(diff_cols)])[1:-1]
-        return 1
 
     def _features_intervals(self, data, periods):
         """
@@ -304,6 +237,7 @@ class DataPopularityEstimator(object):
         popularity = pd.DataFrame()
         popularity['Name'] = self.train_report['Name']
         popularity['Popularity'] = iron(self.train_report['Probability'].values)
+        popularity['Label'] = self.train_report['Label'].values
         self.popularity = popularity
 
         return popularity

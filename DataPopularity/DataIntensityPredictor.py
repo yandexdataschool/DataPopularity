@@ -15,13 +15,14 @@ import re
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
+from .DataBase import DataBase
 
 try:
     from kernel_regression import KernelRegression
 except ImportError as e:
     raise ImportError("Install kernel_regression from www or from 'Packages/' folder. ")
 
-class DataAccessPredictor(object):
+class DataIntensityPredictor(DataBase):
     """
     Data sets access predictor.
     KernelRegression is used.
@@ -37,80 +38,12 @@ class DataAccessPredictor(object):
     """
 
     def __init__(self, source_path=None, data=None, nb_of_weeks=104):
-        if source_path != None:
-            ext = source_path.split('.')[-1]
-            if ext=='csv':
-                try:
-                    self.data = pd.read_csv(source_path)
-                except:
-                    print ("Can not open file.")
-            elif ext=='xls' or ext=='xlsx':
-                try:
-                    self.data = pd.read_excel(source_path)
-                except:
-                    print ("Can not open file.")
-        else:
-            self.data = data
-
-        self.periods = [str(i) for i in range(1,nb_of_weeks+1)]
-        self._fix_columns()
-        self._data_transform()
+        super(DataIntensityPredictor, self).__init__(source_path=source_path, data=data, nb_of_weeks=nb_of_weeks)
 
         self.predicted_curves = None
         self.predict_report = None
         self.df = None
 
-    def _rename(self, x):
-        """
-        :param str or int x: column's name
-        :return: str renamed column's name
-        """
-        return re.sub('\W', '_', str(x))
-
-    def _fix_columns(self):
-        """
-        Rename data columns
-        :return: list[str] renamed column names
-        """
-        self.data.columns = map(self._rename, self.data.columns)
-        return self.data.columns
-
-    def _data_transform(self):
-        """
-        Transform data
-        :return: pandas.DataFrame transformed data
-        """
-        data1 = self.data.copy()
-        data2 = self.data.copy()
-        for i in range(0, len(self.periods)):
-            if i!=0:
-                data1[self.periods[i]] = self.data[self.periods[i]] - self.data[self.periods[i-1]]
-
-        for i in range(0, len(self.periods)):
-            k = len(self.periods)-1-i
-            data2[self.periods[i]] = data1[self.periods[k]]
-
-        for i in range(0, len(self.periods)):
-            if i!=0:
-                data2[self.periods[i]] = data2[self.periods[i]] + data2[self.periods[i-1]]
-        self.data = data2
-        return self.data
-
-    def _check_columns(self):
-        """
-        Check whether all needed data columns are presence
-        :return: 1 if all needed columns are presence in the train data. Otherwise, rise assertion.
-        """
-        cols_needed = pd.core.index.Index([u'Name', u'Configuration', u'ProcessingPass', u'FileType',
-                                           u'Type', u'Creation_week', u'NbLFN', u'LFNSize', u'NbDisk', u'DiskSize', u'NbTape',
-                                           u'TapeSize', u'NbArchived', u'ArchivedSize', u'Nb_Replicas', u'Nb_ArchReps',
-                                           u'Storage', u'FirstUsage', u'LastUsage', u'Now'])
-        cols = self.data.columns
-        intersect = cols.intersection(cols_needed)
-        diff_cols = cols_needed.diff(intersect)
-
-        assert len(diff_cols)==0, str(["Please, add following columns to the data: ", list(diff_cols)])[1:-1]
-        return 1
 
     def _features_intervals(self, data, periods):
         """
@@ -255,7 +188,7 @@ class DataAccessPredictor(object):
 
         predict_report = pd.DataFrame()
         predict_report['Name'] = names
-        predict_report['Access'] = accesses
+        predict_report['Intensity'] = accesses
         predict_report['Std_error'] = std_errors
         self.predict_report = predict_report
         return predict_report

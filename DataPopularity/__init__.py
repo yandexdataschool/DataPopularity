@@ -6,6 +6,16 @@ except:
     pass
 
 try:
-    from .DataAccessPredictor import DataAccessPredictor
+    from .DataIntensityPredictor import DataIntensityPredictor
+except:
+    pass
+
+try:
+    from .DataPlacementOptimizer import DataPlacementOptimizer
+except:
+    pass
+
+try:
+    from .DataBase import DataBase
 except:
     pass
