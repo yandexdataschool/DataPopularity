@@ -130,7 +130,7 @@ class DataPlacementOptimizer(DataBase):
 
         :return: pandas.DataFrame total_report. Total_report with 'NbReplicas' column.
         """
-        total_report['NbReplicas'] = self.data['Nb_Replicas'].values
+        total_report['NbReplicas'] = self.data['Nb_Replicas'].values + (self.data['Nb_Replicas'].values==0)*1
         return total_report
 
     def _set_nb_replicas_auto(self, total_report, alpha=10, max_replicas=4):
