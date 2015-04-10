@@ -1,7 +1,5 @@
 FROM ubuntu:14.04
 MAINTAINER Mikhail Hushchyn <mikhail91@yandex-team.ru>
-
-#install packages for rep
 RUN apt-get update && apt-get install -y \
   python2.7 \
   python-pip \
@@ -32,16 +30,14 @@ RUN pip install \
 RUN pip install scikit-learn==0.15.2
 RUN pip install matplotlib==1.3.1
 
-#install rep
 RUN pip install -i http://pypi.yandex-team.ru/simple/ rep
+
 
 RUN sudo apt-get install -y git
 
-#install DataPopularity
 RUN git clone https://github.com/hushchyn-mikhail/DataPopularity.git
 RUN pip install DataPopularity/Packages/kernel_regression-master/.
 RUN pip install DataPopularity/.
 
-#install packages for data_popularity_api
 RUN pip install flask
 RUN pip install flask-restful
