@@ -12,11 +12,11 @@ import numpy as np
 import pandas as pd
 import re
 
-try:
-    import xgboost as xgb
-except ImportError as e:
-    raise ImportError("Install xgboost and add '../xgboost-master/wrapper' to PYTHONPATH. "
-                        "Probably you'll need to add empty __init__.py to that directory ")
+# try:
+#     import xgboost as xgb
+# except ImportError as e:
+#     raise ImportError("Install xgboost and add '../xgboost-master/wrapper' to PYTHONPATH. "
+#                         "Probably you'll need to add empty __init__.py to that directory ")
 
 try:
     import rep
@@ -28,7 +28,9 @@ from rep.utils import Flattener
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
-from rep.classifiers import XGBoostClassifier
+#from rep.classifiers import XGBoostClassifier #scikit-learn branch
+from rep.classifiers import SklearnClassifier #scikit-learn branch
+from sklearn.ensemble import GradientBoostingClassifier #scikit-learn branch
 from .DataBase import DataBase
 
 
@@ -203,10 +205,12 @@ class DataPopularityEstimator(DataBase):
         train_data, test_data, train_labels, test_labels = train_test_split(df, labels, train_size=0.5)
 
         try:
-            xgboost = XGBoostClassifier(objective='binary:logitraw', eta=0.02, max_depth=6, subsample=0.8, features=features, n_estimators=2500)
+            #xgboost = XGBoostClassifier(objective='binary:logitraw', eta=0.02, max_depth=6, subsample=0.8, features=features, n_estimators=2500) #scikit-learn branch
+            xgboost = SklearnClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8), features=features) #scikit-learn branch
             xgboost.fit(train_data, train_labels)
 
-            xgboost2 = XGBoostClassifier(objective='binary:logitraw', eta=0.02, max_depth=6, subsample=0.8, features=features, n_estimators=2500)
+            #xgboost2 = XGBoostClassifier(objective='binary:logitraw', eta=0.02, max_depth=6, subsample=0.8, features=features, n_estimators=2500) #scikit-learn branch
+            xgboost2 = SklearnClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8), features=features) #scikit-learn branchcd
             xgboost2.fit(test_data, test_labels)
         except:
             print ("Can not train classifier. Please, check data.")
