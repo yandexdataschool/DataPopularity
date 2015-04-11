@@ -3,6 +3,7 @@ __author__ = 'mikhail91'
 import numpy as np
 import pandas as pd
 import re
+from StringIO import StringIO
 from requests import get, post, put
 
 class DataPopularityApiWrapper(object):
@@ -25,12 +26,12 @@ class DataPopularityApiWrapper(object):
     def get_data_popularity(self):
         method_url = self.service_url + '/' + self.session_id + '/Download/popularity.csv'
         output = get(method_url)
-        return output.content
+        return pd.read_csv(StringIO(output.content))
 
     def get_data_intensity_prediction(self):
         method_url = self.service_url + '/' + self.session_id + '/Download/prediction.csv'
         output = get(method_url)
-        return output.content
+        return pd.read_csv(StringIO(output.content))
 
 
 
@@ -42,7 +43,7 @@ class DataPopularityApiWrapper(object):
         put(method_url1, data={'params':str(params)})
         method_url2 = self.service_url + '/' + self.session_id + '/Download/opti_report.csv'
         output = get(method_url2)
-        return output.content
+        return pd.read_csv(StringIO(output.content))
 
     def get_report(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=2000,\
                 alpha=1, max_replicas=4, pop_cut=0.5):
@@ -52,5 +53,5 @@ class DataPopularityApiWrapper(object):
         put(method_url1, data={'params':str(params)})
         method_url2 = self.service_url + '/' + self.session_id + '/Download/report.csv'
         output = get(method_url2)
-        return output.content
+        return pd.read_csv(StringIO(output.content))
 
