@@ -9,6 +9,9 @@ setup(
     author_email='mikhail91@yandex-team.ru',
     install_requires=[
         'data-popularity-api==0.1',
+        'flask',
+        'flask-restful',
+        'Werkzeug',
         'gunicorn',
     ],
 )
