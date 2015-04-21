@@ -7,5 +7,4 @@ Standards-Version: 3.9.3
 Package: data-popularity-api
 Version: 0.1-1
 Architecture: any
-Depends: supervisor, python-dev, libblas-dev, libatlas-dev, liblapack-dev, gfortran, g++, python-numpy, python-pandas, libpng-dev, libjpeg8-dev, libfreetype6-dev
 Description: Api service for data popularity.
