@@ -6,5 +6,5 @@ X-Python-Version: all
 Standards-Version: 3.9.3
 Package: data-popularity-api
 Version: 0.1-1
-Architecture: any
+Architecture: amd64
 Description: Api service for data popularity.
