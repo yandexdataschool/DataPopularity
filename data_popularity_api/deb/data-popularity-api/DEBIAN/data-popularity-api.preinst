@@ -1,0 +1,12 @@
+#!/bin/bash
+
+RUN_DIR=/var/run/data-popularity-api
+USER=robot-efweb:dpt_virtual_robots
+
+if [ ! -d "$RUN_DIR" ]
+then
+    mkdir -p "$RUN_DIR"
+fi
+chown -R $USER $RUN_DIR
+
+#DEBHELPER#

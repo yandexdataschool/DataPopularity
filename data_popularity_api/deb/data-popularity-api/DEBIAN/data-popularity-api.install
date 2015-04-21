@@ -1,0 +1,4 @@
+supervisor_conf/*	etc/supervisor/conf.d
+bin/*	usr/local/bin/
+monitoring/*    etc/monrun/conf.d/
+service/*    etc/init.d/

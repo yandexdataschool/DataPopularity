@@ -1,0 +1,11 @@
+Source: data-popularity-api
+Priority: extra
+Maintainer: Mikhail Hushchyn <mikhail91@yandex-team.ru>
+Build-Depends: debhelper (>= 8.0.0), python, python-all, python-setuptools, dh-virtualenv, yandex-dh-nginx
+X-Python-Version: all
+Standards-Version: 3.9.3
+Package: data-popularity-api
+Version: 0.1-1
+Architecture: any
+Depends: supervisor, python-dev, libblas-dev, libatlas-dev, liblapack-dev, gfortran, g++, python-numpy, python-pandas, libpng-dev, libjpeg8-dev, libfreetype6-dev
+Description: Api service for data popularity.
