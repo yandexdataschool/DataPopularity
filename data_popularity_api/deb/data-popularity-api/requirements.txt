@@ -1,2 +1,0 @@
---index-url http://pypi.yandex-team.ru/simple/
-.

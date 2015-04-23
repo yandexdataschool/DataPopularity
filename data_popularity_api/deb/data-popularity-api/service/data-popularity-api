@@ -1,2 +1,0 @@
-#!/bin/sh
-supervisorctl $1 data-popularity-api
