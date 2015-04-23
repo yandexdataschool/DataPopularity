@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='data-popularity',
+    name='datapop',
     version='0.2.0',
-    packages=['data-popularity'],
-    package_dir={'data-popularity': 'data-popularity'},
+    packages=['datapop'],
+    package_dir={'datapop': 'datapop'},
     url='https://github.com/hushchyn-mikhail/DataPopularity',
     license='',
     author='Mikhail Hushchyn',

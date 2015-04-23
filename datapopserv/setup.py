@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='data-popularity-api',
+    name='datapopserv',
     version='0.1',
     url='',
     license='',
@@ -14,6 +14,6 @@ setup(
         'flask-restful',
         'Werkzeug',
         'rep==0.5.0',
-        'DataPopularity==0.2'
+        'datapop==0.2'
     ],
 )
