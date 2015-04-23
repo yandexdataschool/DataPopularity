@@ -24,7 +24,7 @@ setup(
         'plotly == 1.2.3',
         'scikit-learn == 0.15.2',
         'rep==0.5.0',
-        'kernel_regression==1.0'
+        'kernel_regression==1.0',
         'xlrd == 0.9.3'
     ],
 )
