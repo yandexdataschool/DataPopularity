@@ -37,11 +37,15 @@ RUN pip install -i http://pypi.yandex-team.ru/simple/ rep
 
 RUN sudo apt-get install -y git
 
-#install DataPopularity
-RUN git clone https://github.com/hushchyn-mikhail/DataPopularity.git
+#install datapop
+RUN git clone -b develop https://github.com/hushchyn-mikhail/DataPopularity.git
 RUN pip install DataPopularity/packages/kernel_regression-master/.
-RUN pip install datapop/.
+RUN pip install DataPopularity/datapop/.
 
-#install packages for data_popularity_api
+#install packages for datapopserv
 RUN pip install flask
 RUN pip install flask-restful
+
+#create working directory for datapopserv
+RUN sudo mkdir /var/cache/datapopdir
+ENV WORKING_DIR /var/cache/datapopdir
