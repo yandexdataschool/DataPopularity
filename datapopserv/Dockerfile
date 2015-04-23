@@ -39,8 +39,8 @@ RUN sudo apt-get install -y git
 
 #install DataPopularity
 RUN git clone https://github.com/hushchyn-mikhail/DataPopularity.git
-RUN pip install DataPopularity/Packages/kernel_regression-master/.
-RUN pip install DataPopularity/.
+RUN pip install DataPopularity/packages/kernel_regression-master/.
+RUN pip install datapop/.
 
 #install packages for data_popularity_api
 RUN pip install flask
