@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 setup(
     name='datapopclient',
     version='0.1.0',
-    url='',
+    url='https://github.com/hushchyn-mikhail/DataPopularity',
     author='Mikhail Hushchyn',
     author_email='mikhail91@yandex-team.ru',
     packages=find_packages(),

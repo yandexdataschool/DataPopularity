@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='datapopserv',
     version='0.1',
-    url='',
+    url='https://github.com/hushchyn-mikhail/DataPopularity',
     license='',
     packages=find_packages(),
     author='mikhail91',
