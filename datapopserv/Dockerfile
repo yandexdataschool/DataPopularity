@@ -18,19 +18,19 @@ RUN easy_install distribute
 RUN pip install cython
 RUN pip install "ipython[notebook]"
 RUN pip install \
-  numpy==1.9.1 \
+  numpy==1.9.2 \
   pandas==0.14.0
 
 RUN pip install \
-  pyzmq==14.3.0 \
-  pycurl==7.19.3 \
-  scipy==0.14.0 \
-  plotly \
+  pyzmq==14.5.0 \
+  pycurl==7.19.5.1 \
+  scipy==0.15.1 \
+  plotly==1.2.3 \
   numexpr==2.4 \
   jinja2==2.7.3
 
 RUN pip install scikit-learn==0.15.2
-RUN pip install matplotlib==1.3.1
+RUN pip install matplotlib==1.4.3
 
 #install rep
 RUN pip install -i http://pypi.yandex-team.ru/simple/ rep
