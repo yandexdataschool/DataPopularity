@@ -13,8 +13,8 @@ setup(
     include_package_data=True,
     py_modules = ['datapopclient'],
     install_requires=[
-        'numpy >= 1.8.1',
+        'numpy == 1.9.2',
         'pandas == 0.14.0',
-        'requests',
+        'requests == 2.5.3',
     ],
 )

@@ -1,6 +1,6 @@
 __author__ = 'mikhail91'
 
 try:
-    from .DataPopularityApiWrapper import DataPopularityApiWrapper
+    from .DataPopularityClient import DataPopularityClient
 except:
     pass

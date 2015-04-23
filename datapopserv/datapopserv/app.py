@@ -4,7 +4,7 @@ from flask import Flask, request, redirect, url_for, flash, send_from_directory
 from flask.ext.restful import reqparse, abort, Api, Resource
 import werkzeug
 
-from DataPopularity import DataPopularityEstimator, DataIntensityPredictor, DataPlacementOptimizer
+from datapop import DataPopularityEstimator, DataIntensityPredictor, DataPlacementOptimizer
 import rep
 import numpy as np
 import pandas as pd
@@ -18,8 +18,8 @@ ALLOWED_EXTENSIONS = set(['csv'])
 app = Flask(__name__)
 api = Api(app)
 
-cur_dir = os.getcwd()
-data_popularity_data = cur_dir + '/data_dir' + '/'
+working_dir = os.environ.get('WORKING_DIR')
+data_popularity_data = working_dir + '/'
 
 #Get session_id
 class GetSessionId(Resource):

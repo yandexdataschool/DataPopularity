@@ -6,7 +6,7 @@ import re
 from StringIO import StringIO
 from requests import get, post, put
 
-class DataPopularityApiWrapper(object):
+class DataPopularityClient(object):
     def __init__(self, service_url='http://localhost:5000'):
         self.service_url = service_url
         message = post(service_url).json()
