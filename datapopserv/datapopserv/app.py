@@ -39,7 +39,7 @@ class GetSessionId(Resource):
         return 'Use POST to generate new session_id.'
 
     def delete(self):
-        return 'Your can not delete your session_is.'
+        return 'Your can not delete your session_id.'
 
 #Data Uploading
 class DataUpload(Resource):
@@ -48,7 +48,7 @@ class DataUpload(Resource):
         return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
     def get(self, session_id):
-        return 'Your data saved in directory /' + data_popularity_data + session_id + '/' + 'data.csv'
+        return 'Your data was saved as data.csv file.'
 
     def post(self, session_id):
         file = request.files['file']
@@ -56,15 +56,15 @@ class DataUpload(Resource):
             data_path = data_popularity_data + session_id + '/' + 'data.csv'
             file.save(data_path)
         else:
-            return 'Please, send data file in .csv format.'
-        return 'Your data saved in directory /' + data_popularity_data + session_id + '/' + 'data.csv'
+            return 'Please, send a data file in .csv format.'
+        return 'Your data was saved as data.csv file.'
 
     def put(self, session_id):
         file = request.files['file']
         if file and self.allowed_file(file.filename):
             data_path = data_popularity_data+ session_id + '/' + 'data.csv'
             file.save(data_path)
-        return 'Your data saved in directory /' + data_popularity_data + session_id + '/' + 'data.csv'
+        return 'Your data was saved as data.csv file.'
 
     def delete(self):
         pass
@@ -89,7 +89,7 @@ class DataPopularityApi(Resource):
 
     def get(self, session_id):
         return 'Files data.csv, popularity.csv, prediction.csv, report.csv and opti_report.csv ' \
-               'are in your working directory /' + data_popularity_data +session_id
+               'are in your working directory.'
 
     def post(self, session_id):
         params = self.take_params(request.form['params'])
@@ -116,13 +116,13 @@ class DataPopularityApi(Resource):
                                                    alpha=params['alpha'], \
                                                    max_replicas=params['max_replicas'])
             opti_report.to_csv(data_folder + '/opti_report.csv')
-            return 'Data Popularity report generated in /'+data_folder + '/opti_report.csv'
+            return 'Data Popularity report was generated as opti_report.csv file.'
         else :
             report = optimizer.get_report(q=params['q'], pop_cut=params['pop_cut'], set_replicas=params['set_replicas'],\
                                                    alpha=params['alpha'], \
                                                    max_replicas=params['max_replicas'])
             report.to_csv(data_folder + '/report.csv')
-            return 'Data Popularity report generated in /'+data_folder + '/report.csv'
+            return 'Data Popularity report was generated as report.csv file.'
 
     def put(self, session_id):
         params = self.take_params(request.form['params'])
@@ -142,14 +142,14 @@ class DataPopularityApi(Resource):
                                                    alpha=params['alpha'], \
                                                    max_replicas=params['max_replicas'])
             opti_report.to_csv(data_folder + '/opti_report.csv')
-            return 'Data Popularity report generated in /'+data_folder + '/opti_report.csv'
+            return 'Data Popularity report was generated as opti_report.csv file.'
         else :
             report = optimizer.get_report(q=params['q'], pop_cut=params['pop_cut'], \
                                           set_replicas=params['set_replicas'],\
                                                    alpha=params['alpha'], \
                                                    max_replicas=params['max_replicas'])
             report.to_csv(data_folder + '/report.csv')
-            return 'Data Popularity report generated in /'+data_folder + '/report.csv'
+            return 'Data Popularity report was generated as report.csv file.'
 
     def delete(self, session_id):
         pass
