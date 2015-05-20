@@ -29,9 +29,9 @@ class GetSessionId(Resource):
         return 'Use POST to generate new session_id.'
 
     def post(self):
-        self.session_id = str(np.random.randint(low=1, high=10000))
+        self.session_id = str(np.random.randint(low=100, high=10000000000))
         while os.path.exists(data_popularity_data + self.session_id):
-            self.session_id = str(np.random.randint(low=1, high=10000))
+            self.session_id = str(np.random.randint(low=100, high=10000000000))
         os.makedirs(data_popularity_data + self.session_id)
         return 'Your NEW session_id = '+self.session_id
 
