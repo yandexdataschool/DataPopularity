@@ -12,12 +12,6 @@ import numpy as np
 import pandas as pd
 import re
 
-# try:
-#     import xgboost as xgb
-# except ImportError as e:
-#     raise ImportError("Install xgboost and add '../xgboost-master/wrapper' to PYTHONPATH. "
-#                         "Probably you'll need to add empty __init__.py to that directory ")
-
 try:
     import rep
 except ImportError as e:
@@ -27,8 +21,8 @@ from rep.utils import train_test_split
 from rep.utils import Flattener
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve, auc
+from rep.metaml import FoldingClassifier #new
 import matplotlib.pyplot as plt
-#from rep.classifiers import XGBoostClassifier #scikit-learn branch
 from rep.classifiers import SklearnClassifier #scikit-learn branch
 from sklearn.ensemble import GradientBoostingClassifier #scikit-learn branch
 from .DataBase import DataBase
@@ -202,30 +196,19 @@ class DataPopularityEstimator(DataBase):
         self._check_columns()
         df, features = self._data_preparation()
         labels = ((self.data[self.periods[-1]] - self.data[self.periods[-27]]) == 0).values*1
-        train_data, test_data, train_labels, test_labels = train_test_split(df, labels, train_size=0.5)
 
         try:
-            #xgboost = XGBoostClassifier(objective='binary:logitraw', eta=0.02, max_depth=6, subsample=0.8, features=features, n_estimators=2500) #scikit-learn branch
-            xgboost = SklearnClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8), features=features) #scikit-learn branch
-            xgboost.fit(train_data, train_labels)
+            n_folds = 10
+            folder = FoldingClassifier(GradientBoostingClassifier(), n_folds=n_folds, features=features, random_state=42)
+            folder.fit(df, labels)
 
-            #xgboost2 = XGBoostClassifier(objective='binary:logitraw', eta=0.02, max_depth=6, subsample=0.8, features=features, n_estimators=2500) #scikit-learn branch
-            xgboost2 = SklearnClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8), features=features) #scikit-learn branchcd
-            xgboost2.fit(test_data, test_labels)
         except:
             print ("Can not train classifier. Please, check data.")
 
-        train_report_part1 = pd.DataFrame()
-        train_report_part1['Name'] = test_data['Name'].values
-        train_report_part1['Probability'] = xgboost.predict_proba(test_data)[:,1]
-        train_report_part1['Label'] = test_labels
-
-        train_report_part2 = pd.DataFrame()
-        train_report_part2['Name'] = train_data['Name'].values
-        train_report_part2['Probability'] = xgboost2.predict_proba(train_data)[:,1]
-        train_report_part2['Label'] = train_labels
-
-        self.train_report = pd.concat([train_report_part1, train_report_part2])
+        self.train_report = pd.DataFrame()
+        self.train_report['Name'] = df['Name'].values
+        self.train_report['Probability'] = folder.predict_proba(df)[:,1]
+        self.train_report['Label'] = labels
         return 1
 
     def get_popularity(self):

@@ -4,7 +4,7 @@ from flask import Flask, request, redirect, url_for, flash, send_from_directory
 from flask.ext.restful import reqparse, abort, Api, Resource
 import werkzeug
 
-from datapop import DataPopularityEstimator, DataIntensityPredictor, DataPlacementOptimizer
+from datapop import DataPopularityEstimator, DataIntensityPredictor, DataPlacementOptimizer, Performance
 import rep
 import numpy as np
 import pandas as pd
@@ -83,12 +83,16 @@ class DataPopularityApi(Resource):
         params['c_miss'] = get_params['c_miss'] if get_params.has_key('c_miss') else 2000
         params['alpha'] = get_params['alpha'] if get_params.has_key('alpha') else 1
         params['max_replicas'] = get_params['max_replicas'] if get_params.has_key('max_replicas') else 4
+        params['min_replicas'] = get_params['min_replicas'] if get_params.has_key('min_replicas') else 1
         params['method'] = get_params['method'] if get_params.has_key('method') else 'opti'
         params['pop_cut'] = get_params['pop_cut'] if get_params.has_key('pop_cut') else -1
+        params['t_disk'] = get_params['t_disk'] if get_params.has_key('t_disk') else 0.1
+        params['t_tape'] = get_params['t_tape'] if get_params.has_key('t_tape') else 3
+        params['const_tape'] = get_params['const_tape'] if get_params.has_key('const_tape') else 24
         return params
 
     def get(self, session_id):
-        return 'Files data.csv, popularity.csv, prediction.csv, report.csv and opti_report.csv ' \
+        return 'Files data.csv, popularity.csv, prediction.csv, report.csv and opti_report.csv, opti_performance_report.csv and performance_report.csv  ' \
                'are in your working directory.'
 
     def post(self, session_id):
@@ -114,15 +118,25 @@ class DataPopularityApi(Resource):
                                                    c_tape=params['c_tape'], \
                                                    c_miss=params['c_miss'], \
                                                    alpha=params['alpha'], \
+                                                   min_replicas=params['min_replicas'],\
                                                    max_replicas=params['max_replicas'])
             opti_report.to_csv(data_folder + '/opti_report.csv')
-            return 'Data Popularity report was generated as opti_report.csv file.'
+
+            performance = Performance(data, popularity_report=popularity_report, prediction_report=prediction_report, report=opti_report)
+            opti_performance_report = performance.get_performance_report(t_disk=params['t_disk'], t_tape=params['t_tape'], const_tape=params['const_tape'])
+            opti_performance_report.to_csv(data_folder + '/opti_performance_report.csv')
+            return 'Data Popularity report was generated as opti_report.csv file and performance report was generated as opti_performance_report.csv file.'
         else :
             report = optimizer.get_report(q=params['q'], pop_cut=params['pop_cut'], set_replicas=params['set_replicas'],\
                                                    alpha=params['alpha'], \
+                                                   min_replicas=params['min_replicas'],\
                                                    max_replicas=params['max_replicas'])
             report.to_csv(data_folder + '/report.csv')
-            return 'Data Popularity report was generated as report.csv file.'
+
+            performance = Performance(data, popularity_report=popularity_report, prediction_report=prediction_report, report=report)
+            performance_report = performance.get_performance_report(t_disk=params['t_disk'], t_tape=params['t_tape'], const_tape=params['const_tape'])
+            performance_report.to_csv(data_folder + '/performance_report.csv')
+            return 'Data Popularity report was generated as report.csv file and performance report was generated as performance_report.csv file.'
 
     def put(self, session_id):
         params = self.take_params(request.form['params'])
@@ -140,16 +154,26 @@ class DataPopularityApi(Resource):
                                                    c_tape=params['c_tape'], \
                                                    c_miss=params['c_miss'], \
                                                    alpha=params['alpha'], \
+                                                   min_replicas=params['min_replicas'],\
                                                    max_replicas=params['max_replicas'])
             opti_report.to_csv(data_folder + '/opti_report.csv')
-            return 'Data Popularity report was generated as opti_report.csv file.'
+
+            performance = Performance(data, popularity_report=popularity_report, prediction_report=prediction_report, report=opti_report)
+            opti_performance_report = performance.get_performance_report(t_disk=params['t_disk'], t_tape=params['t_tape'], const_tape=params['const_tape'])
+            opti_performance_report.to_csv(data_folder + '/opti_performance_report.csv')
+            return 'Data Popularity report was generated as opti_report.csv file and performance report was generated as opti_performance_report.csv file.'
         else :
-            report = optimizer.get_report(q=params['q'], pop_cut=params['pop_cut'], \
-                                          set_replicas=params['set_replicas'],\
+            report = optimizer.get_report(q=params['q'], pop_cut=params['pop_cut'], set_replicas=params['set_replicas'],\
                                                    alpha=params['alpha'], \
+                                                   min_replicas=params['min_replicas'],\
                                                    max_replicas=params['max_replicas'])
             report.to_csv(data_folder + '/report.csv')
-            return 'Data Popularity report was generated as report.csv file.'
+
+            performance = Performance(data, popularity_report=popularity_report, prediction_report=prediction_report, report=report)
+            performance_report = performance.get_performance_report(t_disk=params['t_disk'], t_tape=params['t_tape'], const_tape=params['const_tape'])
+            performance_report.to_csv(data_folder + '/performance_report.csv')
+            return 'Data Popularity report was generated as report.csv file and performance report was generated as performance_report.csv file.'
+
 
     def delete(self, session_id):
         pass

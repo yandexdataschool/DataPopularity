@@ -19,3 +19,8 @@ try:
     from .DataBase import DataBase
 except:
     pass
+
+try:
+    from .Performance import Performance
+except:
+    pass

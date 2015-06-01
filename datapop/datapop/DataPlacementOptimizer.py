@@ -34,9 +34,12 @@ class DataPlacementOptimizer(DataBase):
     def __init__(self, popularity_report, prediction_report, data, source_path=None, nb_of_weeks=104):
         super(DataPlacementOptimizer, self).__init__(source_path=source_path, data=data, nb_of_weeks=nb_of_weeks)
 
-        self.popularity_report = popularity_report.sort(columns='Name')
-        self.prediction_report = prediction_report.sort(columns='Name')
-        self.data = data[data['Name'].isin(self.popularity_report['Name'])].sort(columns='Name')
+        selection = (data.sort(columns='Name')['Nb_Replicas']>=1.).values #In Performance. TODO
+        data_sel = data.sort(columns='Name')[selection]
+
+        self.popularity_report = popularity_report.sort(columns='Name')[selection]
+        self.prediction_report = prediction_report.sort(columns='Name')[selection]
+        self.data = data_sel[data_sel['Name'].isin(self.popularity_report['Name'])].sort(columns='Name')
         self.total_report = self._init_total_report()
 
 
@@ -133,7 +136,7 @@ class DataPlacementOptimizer(DataBase):
         total_report['NbReplicas'] = self.data['Nb_Replicas'].values + (self.data['Nb_Replicas'].values==0)*1
         return total_report
 
-    def _set_nb_replicas_auto(self, total_report, alpha=10, max_replicas=4):
+    def _set_nb_replicas_auto(self, total_report, alpha=10, min_replicas=1, max_replicas=4):
         """
         Set data sets number of replicas by optimized values from loss function.
 
@@ -147,9 +150,9 @@ class DataPlacementOptimizer(DataBase):
         """
         marker = total_report['OnDisk'].values
         inten = total_report['Intensity'].values*marker
-        values = np.array(1. + float(alpha)*inten/1., ndmin=2).T
-        replicas = np.ones(values.shape)
-        for i in range(2, max_replicas+1):
+        values = np.array(np.float(min_replicas) + float(alpha)*inten/np.float(min_replicas), ndmin=2).T
+        replicas = np.ones(values.shape)*np.float(min_replicas)
+        for i in range(min_replicas+1, max_replicas+1):
             val_for_i = np.array(float(i) + float(alpha)*inten/float(i), ndmin=2).T
             rep_for_i = np.ones(val_for_i.shape)*i
             values = np.concatenate((values, val_for_i), axis=1)
@@ -158,8 +161,9 @@ class DataPlacementOptimizer(DataBase):
         mask_values = (values==min_values)
         nb_replicas = []
         for i in mask_values:
-            nb_rep = np.nonzero(i)[0][0]+1.
+            nb_rep = np.nonzero(i)[0][0]+min_replicas
             nb_replicas.append(float(nb_rep))
+        nb_replicas = np.array(nb_replicas)
         total_report['NbReplicas'] = nb_replicas
         #total_report['NbReplicas'] = list(1 + replicas[values==values.min(axis=1).reshape(values.shape[0],1)])
         return total_report
@@ -177,7 +181,7 @@ class DataPlacementOptimizer(DataBase):
         total_report['Missing'] = (label==0)*(marker==0)*1
         return total_report
 
-    def _report_upgrade(self, total_report, pop_cut=0.5, q=None, alpha=10, max_replicas=4, set_replicas='auto'):
+    def _report_upgrade(self, total_report, pop_cut=0.5, q=None, alpha=10, min_replicas=1, max_replicas=4, set_replicas='auto'):
         """
         Return upgraded total_report.
 
@@ -217,7 +221,7 @@ class DataPlacementOptimizer(DataBase):
         elif set_replicas=='origin':
             total_report = self._set_nb_replicas_origin(total_report)
         elif set_replicas=='auto':
-            total_report = self._set_nb_replicas_auto(total_report, alpha, max_replicas)
+            total_report = self._set_nb_replicas_auto(total_report, alpha, min_replicas, max_replicas)
         else:
             assert 0, "Value of the parameter 'set_replicas' is incorrect. Check your 'set_replicas' value."
         total_report = self._set_missing(total_report)
@@ -253,7 +257,7 @@ class DataPlacementOptimizer(DataBase):
         loss = (nc_disk + nc_tape + nc_miss + nc_replicas)
         return loss
 
-    def _get_loss_curve(self, total_report, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=10000, alpha=10, max_replicas=4):
+    def _get_loss_curve(self, total_report, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=10000, alpha=10, min_replicas=1, max_replicas=4):
         """
 
         :param pandas.DataFrame total_report: total_report.
@@ -289,7 +293,7 @@ class DataPlacementOptimizer(DataBase):
         cuts = np.array(np.arange(0.01, 1, 0.01))
         loss_curve = []
         for i in cuts:
-            report = self._report_upgrade(total_report=total_report, pop_cut=i,  q=q, alpha=alpha, max_replicas=max_replicas, set_replicas=set_replicas)
+            report = self._report_upgrade(total_report=total_report, pop_cut=i,  q=q, alpha=alpha, min_replicas=min_replicas, max_replicas=max_replicas, set_replicas=set_replicas)
             loss = self._loss_function(report, c_disk, c_tape, c_miss, alpha)
             loss_curve.append(loss)
         loss_curve = np.array(loss_curve)
@@ -297,7 +301,7 @@ class DataPlacementOptimizer(DataBase):
         min_cut = cuts[loss_curve==min_loss]
         return cuts, loss_curve, min_cut, min_loss
 
-    def get_report(self, pop_cut=0.5, q=None, set_replicas='auto', alpha=10, max_replicas=4):
+    def get_report(self, pop_cut=0.5, q=None, set_replicas='auto', alpha=10, min_replicas=1, max_replicas=4):
         """
         Get data sets storage placement report.
 
@@ -326,10 +330,10 @@ class DataPlacementOptimizer(DataBase):
         :return: pandas.DataFrame report. Return data sets storage placement report.
         """
         report = self.total_report.copy()
-        report = self._report_upgrade(report, pop_cut=pop_cut, q=q, alpha=alpha, max_replicas=max_replicas, set_replicas=set_replicas)
+        report = self._report_upgrade(report, pop_cut=pop_cut, q=q, alpha=alpha, min_replicas=1, max_replicas=max_replicas, set_replicas=set_replicas)
         return report
 
-    def opti_placement(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=10000, alpha=10, max_replicas=4):
+    def opti_placement(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=10000, alpha=10, min_replicas=1, max_replicas=4):
         """
         Get optimized data sets storage placement report (popularity cut value optimization).
 
@@ -361,13 +365,13 @@ class DataPlacementOptimizer(DataBase):
 
         :return: pandas.DataFrame opti_report. Return optimized data sets storage placement report.
         """
-        cuts, loss, min_cut, min_loss = self._get_loss_curve(self.total_report, q=q, set_replicas=set_replicas, c_disk=c_disk, c_tape=c_tape, c_miss=c_miss, alpha=alpha, max_replicas=max_replicas)
-        self.total_report = self._report_upgrade(total_report=self.total_report, pop_cut=min_cut,  q=q, set_replicas=set_replicas, alpha=alpha, max_replicas=max_replicas)
+        cuts, loss, min_cut, min_loss = self._get_loss_curve(self.total_report, q=q, set_replicas=set_replicas, c_disk=c_disk, c_tape=c_tape, c_miss=c_miss, alpha=alpha, min_replicas=min_replicas, max_replicas=max_replicas)
+        self.total_report = self._report_upgrade(total_report=self.total_report, pop_cut=min_cut,  q=q, set_replicas=set_replicas, alpha=alpha, min_replicas=min_replicas, max_replicas=max_replicas)
         opti_report = pd.DataFrame()
         opti_report = self.total_report[['Name', 'OnDisk', 'NbReplicas']]
         return opti_report
 
-    def plot_loss_curve(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=10000, alpha=10, max_replicas=4):
+    def plot_loss_curve(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=10000, alpha=10, min_replicas=1, max_replicas=4):
         """
         Plot loss curve.
 
@@ -400,7 +404,7 @@ class DataPlacementOptimizer(DataBase):
         :return: int 1.
         """
         report = self.total_report.copy()
-        cuts, loss, min_cut, min_loss = self._get_loss_curve(self.total_report, q=q, set_replicas=set_replicas, c_disk=c_disk, c_tape=c_tape, c_miss=c_miss, alpha=alpha, max_replicas=max_replicas)
+        cuts, loss, min_cut, min_loss = self._get_loss_curve(self.total_report, q=q, set_replicas=set_replicas, c_disk=c_disk, c_tape=c_tape, c_miss=c_miss, alpha=alpha, min_replicas=min_replicas, max_replicas=max_replicas)
         print ('Min point is ', (min_cut[0], min_loss))
         plt.plot(cuts, np.log(loss))
         plt.xlabel('Popularity cuts')

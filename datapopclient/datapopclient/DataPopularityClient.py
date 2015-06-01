@@ -36,9 +36,9 @@ class DataPopularityClient(object):
 
 
     def get_opti_report(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=2000,\
-                alpha=1, max_replicas=4):
+                alpha=1, min_replicas=1, max_replicas=4):
         params={'q':q, 'set_replicas':set_replicas, 'c_disk':c_disk, 'c_tape':c_tape,\
-                'c_miss':c_miss, 'alpha':alpha, 'max_replicas':max_replicas, 'method':'opti'}
+                'c_miss':c_miss, 'alpha':alpha, 'min_replicas':min_replicas, 'max_replicas':max_replicas, 'method':'opti'}
         method_url1 = self.service_url + '/' + self.session_id + '/DataPopularityApi'
         put(method_url1, data={'params':str(params)})
         method_url2 = self.service_url + '/' + self.session_id + '/Download/opti_report.csv'
@@ -46,12 +46,32 @@ class DataPopularityClient(object):
         return pd.read_csv(StringIO(output.content))
 
     def get_report(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=2000,\
-                alpha=1, max_replicas=4, pop_cut=0.5):
+                alpha=1, min_replicas=1, max_replicas=4, pop_cut=0.5):
         params={'q':q, 'set_replicas':set_replicas, 'c_disk':c_disk, 'c_tape':c_tape,\
-                'c_miss':c_miss, 'alpha':alpha, 'max_replicas':max_replicas, 'method':'report', 'pop_cut':pop_cut}
+                'c_miss':c_miss, 'alpha':alpha, 'min_replicas':min_replicas, 'max_replicas':max_replicas, 'method':'report', 'pop_cut':pop_cut}
         method_url1 = self.service_url + '/' + self.session_id + '/DataPopularityApi'
         put(method_url1, data={'params':str(params)})
         method_url2 = self.service_url + '/' + self.session_id + '/Download/report.csv'
+        output = get(method_url2)
+        return pd.read_csv(StringIO(output.content))
+
+    def get_opti_performance(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=2000,\
+                alpha=1, min_replicas=1, max_replicas=4):
+        params={'q':q, 'set_replicas':set_replicas, 'c_disk':c_disk, 'c_tape':c_tape,\
+                'c_miss':c_miss, 'alpha':alpha, 'min_replicas':min_replicas, 'max_replicas':max_replicas, 'method':'opti'}
+        method_url1 = self.service_url + '/' + self.session_id + '/DataPopularityApi'
+        put(method_url1, data={'params':str(params)})
+        method_url2 = self.service_url + '/' + self.session_id + '/Download/opti_performance_report.csv'
+        output = get(method_url2)
+        return pd.read_csv(StringIO(output.content))
+
+    def get_performnce(self, q=None, set_replicas='auto', c_disk=100, c_tape=1, c_miss=2000,\
+                alpha=1, min_replicas=1, max_replicas=4, pop_cut=0.5):
+        params={'q':q, 'set_replicas':set_replicas, 'c_disk':c_disk, 'c_tape':c_tape,\
+                'c_miss':c_miss, 'alpha':alpha, 'min_replicas':min_replicas, 'max_replicas':max_replicas, 'method':'report', 'pop_cut':pop_cut}
+        method_url1 = self.service_url + '/' + self.session_id + '/DataPopularityApi'
+        put(method_url1, data={'params':str(params)})
+        method_url2 = self.service_url + '/' + self.session_id + '/Download/performance_report.csv'
         output = get(method_url2)
         return pd.read_csv(StringIO(output.content))
 
