@@ -199,7 +199,8 @@ class DataPopularityEstimator(DataBase):
 
         try:
             n_folds = 10
-            folder = FoldingClassifier(GradientBoostingClassifier(), n_folds=n_folds, features=features, random_state=42)
+            folder = FoldingClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8),\
+                                       n_folds=n_folds, features=features, random_state=42)
             folder.fit(df, labels)
 
         except:
