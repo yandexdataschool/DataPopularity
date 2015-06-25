@@ -1,0 +1,13 @@
+setup.py
+datapop/DataBase.py
+datapop/DataIntensityPredictor.py
+datapop/DataPlacementOptimizer.py
+datapop/DataPopularityEstimator.py
+datapop/Performance.py
+datapop/__init__.py
+datapop.egg-info/PKG-INFO
+datapop.egg-info/SOURCES.txt
+datapop.egg-info/dependency_links.txt
+datapop.egg-info/pbr.json
+datapop.egg-info/requires.txt
+datapop.egg-info/top_level.txt
