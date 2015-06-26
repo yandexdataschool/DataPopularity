@@ -11,3 +11,7 @@ datapop.egg-info/dependency_links.txt
 datapop.egg-info/pbr.json
 datapop.egg-info/requires.txt
 datapop.egg-info/top_level.txt
+datapop/LHCb/DataPreprocessor.py
+datapop/LHCb/__init__.py
+datapop/core/ProbabilityEstimator.py
+datapop/core/__init__.py

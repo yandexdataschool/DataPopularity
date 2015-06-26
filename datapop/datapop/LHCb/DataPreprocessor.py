@@ -57,8 +57,8 @@ class DataPreprocessor(object):
         number_columns = [col for col in columns if number_col_filter.search(col)]
         periods = number_columns
 
-        data1 = data['Name' + periods].copy()
-        data2 = data['Name' + periods].copy()
+        data1 = data[['Name'] + periods].copy()
+        data2 = data[['Name'] + periods].copy()
         for i in range(0, len(periods)):
             if i!=0:
                 data1[periods[i]] = data[periods[i]] - data[periods[i-1]]
@@ -74,8 +74,8 @@ class DataPreprocessor(object):
         This method generate preprocessed LHCb data in standart form.
         :return: pandas.DataFrame: preprocessed data.
         """
-        preprocessed_data = pd.DataFrame()
-        preprocessed_data['ID'] = self._get_ids(self.data).values
         time_series, periods = self._get_time_series(self.data)
-        preprocessed_data[periods] = time_series.values
+        preprocessed_data = pd.DataFrame(columns=['ID']+periods)
+        preprocessed_data['ID'] = self._get_ids(self.data).values
+        preprocessed_data[periods] = time_series[periods].values
         return preprocessed_data
