@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='datapop',
-    version='0.2.0',
-    packages=['datapop'],
+    version='1.0.0',
+    packages=['datapop', 'datapop.core', 'datapop.LHCb'],
     package_dir={'datapop': 'datapop'},
     url='https://github.com/hushchyn-mikhail/DataPopularity',
     license='',
