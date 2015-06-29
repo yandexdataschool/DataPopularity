@@ -97,11 +97,13 @@ class ProbabilityEstimator(object):
             type_label = type_label + (fh_data_values >= class_abs_thresholds[type_num])*(type_num + 1) #Storage type type_num + 1
 
         train_num_cols = number_columns[:-forecast_horizont]
-        preprocessed_data = pd.DataFrame(columns=['ID']+train_num_cols+['Type'])
+        preprocessed_data = pd.DataFrame(columns=['ID']+train_num_cols+['FirstUsage', 'Type'])
         preprocessed_data['ID'] = data['ID'].values
         preprocessed_data[train_num_cols] = data[train_num_cols].values
+        preprocessed_data['FirstUsage'] = (data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)
         preprocessed_data['Type'] = type_label
-        return preprocessed_data, train_num_cols
+        train_cols = train_num_cols + ['FirstUsage']
+        return preprocessed_data, train_cols
 
     def get_probabilities(self):
         """
@@ -110,15 +112,15 @@ class ProbabilityEstimator(object):
         'Current_Type' - current data storage type for each dataset estimated on the last forecast_horizont time periods;
         'Proba_Type_i' - datasets probabilities to be stored on storage type i.
         """
-        preprocessed_data, number_columns = self._data_preprocessing(self.data, self.forecast_horizont, self.class_abs_thresholds)
+        preprocessed_data, train_columns = self._data_preprocessing(self.data, self.forecast_horizont, self.class_abs_thresholds)
         self.preprocessed_data = preprocessed_data.copy() #Used just for output
-        X = preprocessed_data[number_columns].astype(np.float)
+        X = preprocessed_data[train_columns].astype(np.float)
         Y = preprocessed_data['Type'].values
 
         try:
-            n_folds = 10
+            n_folds = 3
             folder = FoldingClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8),\
-                                       n_folds=n_folds, features=number_columns, random_state=42)
+                                       n_folds=n_folds, features=train_columns, random_state=42)
             folder.fit(X, Y)
             self.classifier = folder #Used just for output
         except:
