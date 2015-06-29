@@ -95,7 +95,7 @@ class ForecastNumberAccesses(object):
         :return: int: window width.
         """
         nonzero_inds = y.nonzero()[0]
-        if len(nonzero_inds)==0:
+        if len(nonzero_inds)<=0:
             return 1
         else:
             return (nonzero_inds[-1] - nonzero_inds[0])//(len(nonzero_inds) - 1) + 1
@@ -110,7 +110,7 @@ class ForecastNumberAccesses(object):
         :return: numpy.array(float): time series which is fitted by forecast model.
         """
 
-        x = np.array(range(0,len(y)))
+        x = np.array([[i] for i in range(0,len(y))])
         kr = KernelRegression(kernel="rbf", gamma=np.logspace(-2, 2, 10))
         y_kr = kr.fit(x, y).predict(x)
 
@@ -129,7 +129,7 @@ class ForecastNumberAccesses(object):
         preprocessed_data, number_columns = self._data_preprocessing(self.data)
         preprocessed_values = preprocessed_data[number_columns].values
         forecast_values = np.zeros((preprocessed_values.shape[0], preprocessed_values.shape[1] + self.forecast_horizont))
-        for row in preprocessed_values.shape[0]:
+        for row in range(0,preprocessed_values.shape[0]):
             y = preprocessed_values[row, :]
             forecast_values[row, :] = self._one_time_series_forecast(y, self.forecast_horizont)
 
