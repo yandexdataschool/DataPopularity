@@ -138,6 +138,32 @@ class ProbabilityEstimator(object):
             report['Proba_Type_%d' % class_i] = probabilities[:,i]
         return report
 
+    def _test_future_proba(self):
+
+        preprocessed_data_test, test_columns = self._data_preprocessing(self.data, self.forecast_horizont, self.class_abs_thresholds)
+        X_test = preprocessed_data_test[test_columns[self.forecast_horizont:]].astype(np.float)
+        Y_test = preprocessed_data_test['Type'].values
+
+        preprocessed_data_train, train_columns = self._data_preprocessing(preprocessed_data_test[['ID']+test_columns], self.forecast_horizont, self.class_abs_thresholds)
+        X_train = preprocessed_data_train[train_columns].astype(np.float)
+        Y_train = preprocessed_data_train['Type'].values
+
+        n_folds = 3
+        folder = FoldingClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8),\
+                                       n_folds=n_folds, features=train_columns, random_state=42)
+        folder.fit(X_train, Y_train)
+
+        probabilities_train = folder.predict_proba(X_train)
+        fpr_train, tpr_train, _ = roc_curve(Y_train, probabilities_train[:,1], pos_label=None, sample_weight=None)
+        roc_auc_train = auc(fpr_train, tpr_train)
+
+        probabilities_test = folder.predict_proba(X_test)
+        fpr_test, tpr_test, _ = roc_curve(Y_test, probabilities_test[:,1], pos_label=None, sample_weight=None)
+        roc_auc_test = auc(fpr_test, tpr_test)
+
+        return roc_auc_train, roc_auc_test
+
+
 
 
 
