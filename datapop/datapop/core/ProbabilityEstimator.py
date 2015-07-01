@@ -120,7 +120,7 @@ class ProbabilityEstimator(object):
         try:
             n_folds = 3
             folder = FoldingClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8),\
-                                       n_folds=n_folds, features=train_columns, random_state=42)
+                                       n_folds=n_folds, features=None, random_state=42)
             folder.fit(X, Y)
             self.classifier = folder #Used just for output
         except:
@@ -138,6 +138,11 @@ class ProbabilityEstimator(object):
             report['Proba_Type_%d' % class_i] = probabilities[:,i]
         return report
 
+
+        # definition of mean function, which combines all predictions
+    def _mean_vote(self, x):
+        return np.mean(x, axis=0)
+
     def _test_future_proba(self):
 
         preprocessed_data_test, test_columns = self._data_preprocessing(self.data, self.forecast_horizont, self.class_abs_thresholds)
@@ -148,16 +153,16 @@ class ProbabilityEstimator(object):
         X_train = preprocessed_data_train[train_columns].astype(np.float)
         Y_train = preprocessed_data_train['Type'].values
 
-        n_folds = 3
+        n_folds = 2
         folder = FoldingClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8),\
-                                       n_folds=n_folds, features=train_columns, random_state=42)
-        folder.fit(X_train, Y_train)
+                                       n_folds=n_folds, features=None, random_state=42)
+        folder.fit(X_train.values, Y_train)
 
-        probabilities_train = folder.predict_proba(X_train)
+        probabilities_train = folder.predict_proba(X_train.values)
         fpr_train, tpr_train, _ = roc_curve(Y_train, probabilities_train[:,1], pos_label=None, sample_weight=None)
         roc_auc_train = auc(fpr_train, tpr_train)
 
-        probabilities_test = folder.predict_proba(X_test)
+        probabilities_test = folder.predict_proba(X_test.values)
         fpr_test, tpr_test, _ = roc_curve(Y_test, probabilities_test[:,1], pos_label=None, sample_weight=None)
         roc_auc_test = auc(fpr_test, tpr_test)
 
