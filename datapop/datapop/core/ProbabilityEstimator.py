@@ -114,7 +114,7 @@ class ProbabilityEstimator(object):
         """
         preprocessed_data, train_columns = self._data_preprocessing(self.data, self.forecast_horizont, self.class_abs_thresholds)
         self.preprocessed_data = preprocessed_data.copy() #Used just for output
-        X = preprocessed_data[train_columns].astype(np.float)
+        X = preprocessed_data[train_columns].astype(np.float).values
         Y = preprocessed_data['Type'].values
 
         try:
