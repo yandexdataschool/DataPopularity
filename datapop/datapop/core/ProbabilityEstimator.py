@@ -94,7 +94,7 @@ class ProbabilityEstimator(object):
         fh_data_values = data[number_columns[-forecast_horizont:]].sum(axis=1).values
         type_label = 0 #Storage type 0
         for type_num in range(0, len(self.class_abs_thresholds)):
-            type_label = type_label + (fh_data_values >= class_abs_thresholds[type_num])*(type_num + 1) #Storage type type_num + 1
+            type_label = type_label + (fh_data_values >= class_abs_thresholds[type_num])*(1) #Storage type type_num + 1 TODO
 
         train_num_cols = number_columns[:-forecast_horizont]
         preprocessed_data = pd.DataFrame(columns=['ID']+train_num_cols+['FirstUsage', 'Type'])
@@ -138,10 +138,6 @@ class ProbabilityEstimator(object):
             report['Proba_Type_%d' % class_i] = probabilities[:,i]
         return report
 
-
-        # definition of mean function, which combines all predictions
-    def _mean_vote(self, x):
-        return np.mean(x, axis=0)
 
     def _test_future_proba(self):
 
