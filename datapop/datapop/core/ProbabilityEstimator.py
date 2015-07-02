@@ -173,14 +173,12 @@ class ProbabilityEstimator(object):
         train_report['ID'] = train_data['ID'].values
         train_report['Type'] = train_data['Type']
         train_report[train_report_proba_cols] = train_probabilities
-        self.train_report = train_report
 
         test_report_proba_cols = ['Proba_Type_%d' % classes[i] for i in range(0, len(classes))]
         test_report = pd.DataFrame(columns=['ID', 'Type']+test_report_proba_cols)
         test_report['ID'] = test_data['ID'].values
         test_report['Type'] = test_data['Type']
         test_report[test_report_proba_cols] = test_probabilities
-        self.test_report = test_report
 
         return roc_auc_train, roc_auc_test, train_report, test_report
 
