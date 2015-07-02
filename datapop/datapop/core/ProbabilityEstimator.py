@@ -178,7 +178,7 @@ class ProbabilityEstimator(object):
         test_report_proba_cols = ['Proba_Type_%d' % classes[i] for i in range(0, len(classes))]
         test_report = pd.DataFrame(columns=['ID', 'Type']+test_report_proba_cols)
         test_report['ID'] = test_data['ID'].values
-        train_report['Type'] = test_data['Type']
+        test_report['Type'] = test_data['Type']
         test_report[test_report_proba_cols] = test_probabilities
         self.test_report = test_report
 

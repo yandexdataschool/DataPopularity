@@ -27,8 +27,8 @@
       <file leaf-file-name="ProbabilityEstimator.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8880597" vertical-offset="2046" max-vertical-offset="3450">
-              <caret line="184" column="69" selection-start-line="184" selection-start-column="69" selection-end-line="184" selection-end-column="69" />
+            <state vertical-scroll-proportion="0.79477614" vertical-offset="2076" max-vertical-offset="3450">
+              <caret line="181" column="20" selection-start-line="181" selection-start-column="20" selection-end-line="181" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -697,8 +697,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8880597" vertical-offset="2046" max-vertical-offset="3450">
-          <caret line="184" column="69" selection-start-line="184" selection-start-column="69" selection-end-line="184" selection-end-column="69" />
+        <state vertical-scroll-proportion="0.79477614" vertical-offset="2076" max-vertical-offset="3450">
+          <caret line="181" column="20" selection-start-line="181" selection-start-column="20" selection-end-line="181" selection-end-column="20" />
           <folding />
         </state>
       </provider>
