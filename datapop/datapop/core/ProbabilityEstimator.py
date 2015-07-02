@@ -166,7 +166,23 @@ class ProbabilityEstimator(object):
         fpr_test, tpr_test, _ = roc_curve(Y_test, test_probabilities[:,1], pos_label=None, sample_weight=None)
         roc_auc_test = auc(fpr_test, tpr_test)
 
-        return roc_auc_train, roc_auc_test, train_probabilities, test_probabilities, Y_train, Y_test
+        classes = folder.classes_
+
+        train_report_proba_cols = ['Proba_Type_%d' % classes[i] for i in range(0, len(classes))]
+        train_report = pd.DataFrame(columns=['ID', 'Type']+train_report_proba_cols)
+        train_report['ID'] = train_data['ID'].values
+        train_report['Type'] = train_data['Type']
+        train_report[train_report_proba_cols] = train_probabilities
+        self.train_report = train_report
+
+        test_report_proba_cols = ['Proba_Type_%d' % classes[i] for i in range(0, len(classes))]
+        test_report = pd.DataFrame(columns=['ID', 'Type']+test_report_proba_cols)
+        test_report['ID'] = test_data['ID'].values
+        train_report['Type'] = test_data['Type']
+        test_report[test_report_proba_cols] = test_probabilities
+        self.test_report = test_report
+
+        return roc_auc_train, roc_auc_test, train_report, test_report
 
     def get_probabilities(self):
         """
