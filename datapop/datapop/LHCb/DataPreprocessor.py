@@ -69,13 +69,33 @@ class DataPreprocessor(object):
 
         return data2, periods
 
+    def _get_time(self, data=None):
+        """
+        This method is used to get 'Creation-week', 'FirstUsage' and 'Now' columns from LHCb data.
+        :param pandas.DataFrame data: LHCb data.
+        :return: pandas.DataFrame: time columns.
+        numpy.array([str]): names of the time columns.
+        """
+        data = self._fix_columns(data)
+        columns = data.columns
+        number_col_filter = re.compile("^\d+$")
+        number_columns = [col for col in columns if number_col_filter.search(col)]
+        time_cols = ['Creation', 'First', 'StartTime', 'Now']
+        time_data = pd.DataFrame(columns=['Name']+time_cols)
+        time_data['Name'] = data['Name'].values
+        time_data[['Creation', 'First', 'Now']] = data[['Creation_week', 'FirstUsage', 'Now']].values
+        time_data['StartTime'] = time_data['Now'] - len(number_columns)
+        return time_data, time_cols
+
     def get_preprocessed_data(self):
         """
         This method generate preprocessed LHCb data in standart form.
         :return: pandas.DataFrame: preprocessed data.
         """
         time_series, periods = self._get_time_series(self.data)
-        preprocessed_data = pd.DataFrame(columns=['ID']+periods)
+        time_data, time_cols = self._get_time(self.data)
+        preprocessed_data = pd.DataFrame(columns=['ID']+time_cols+periods)
         preprocessed_data['ID'] = self._get_ids(self.data).values
+        preprocessed_data[time_cols] = time_data[time_cols].values
         preprocessed_data[periods] = time_series[periods].values
         return preprocessed_data
