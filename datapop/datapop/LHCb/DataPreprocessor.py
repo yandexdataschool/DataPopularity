@@ -87,6 +87,14 @@ class DataPreprocessor(object):
         time_data['StartTime'] = time_data['Now'] - len(number_columns)
         return time_data, time_cols
 
+    def _get_size(self, data=None):
+        """
+        This method is used to get datasets disk size from LHCb data.
+        :param pandas.DataFrame data: LHCb data.
+        :return: pandas.DataFrame: LHCb datasets disk size.
+        """
+        return data['DiskSize']
+
     def get_preprocessed_data(self):
         """
         This method generate preprocessed LHCb data in standart form.
@@ -94,8 +102,9 @@ class DataPreprocessor(object):
         """
         time_series, periods = self._get_time_series(self.data)
         time_data, time_cols = self._get_time(self.data)
-        preprocessed_data = pd.DataFrame(columns=['ID']+time_cols+periods)
+        preprocessed_data = pd.DataFrame(columns=['ID', 'DiskSize']+time_cols+periods)
         preprocessed_data['ID'] = self._get_ids(self.data).values
+        preprocessed_data['DiskSize'] = self._get_size(self.data).values
         preprocessed_data[time_cols] = time_data[time_cols].values
         preprocessed_data[periods] = time_series[periods].values
         return preprocessed_data

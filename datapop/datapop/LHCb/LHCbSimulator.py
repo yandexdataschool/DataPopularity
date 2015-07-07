@@ -6,12 +6,13 @@ __author__ = 'mikhail91'
 ###Version 1.0.0   ###
 ######################
 
-import numpy as np
 import pandas as pd
 import re
 
-from datapop.core import Simulator, Performance
+from datapop.core import Simulator
 from datapop.LHCb import DataPreprocessor
+from datapop.LHCb import Performance
+
 
 class LHCbSimulator(Simulator):
 
@@ -22,8 +23,6 @@ class LHCbSimulator(Simulator):
         self.begin = int(begin)
         self.step = int(step)
         self.recommendation_system = recommendation_system
-        self.forecast_horizont = recommendation_system.forecast_horizont
-        self.class_abs_thresholds = recommendation_system.class_abs_thresholds
 
         columns = data.columns
         number_col_filter = re.compile("^\d+$")
@@ -34,46 +33,47 @@ class LHCbSimulator(Simulator):
     def _generate_data(self, data=None, size=None):
         return super(LHCbSimulator, self).generate_data(data=data, size=size)
 
-    def _data_at_period(self, data=None, period=None):
-        return super(LHCbSimulator, self).data_at_period(data=data, period=period)
+    def _get_period(self, data=None, period=None, forecast_horizont=None, class_abs_thresholds=None):
+        return super(LHCbSimulator, self).get_period(data=data, period=period, forecast_horizont=forecast_horizont,\
+                                                     class_abs_thresholds=class_abs_thresholds)
 
-    def _true_lables_at_period(self, data=None, period=None, forecast_horizont=None, class_abs_thresholds=None):
-        columns = data.columns
-        number_col_filter = re.compile("^\d+$")
-        number_columns = [col for col in columns if number_col_filter.search(col)]
-        forecast_cols = number_columns[number_columns.index(str(period))+1:number_columns.index(str(period))+1+forecast_horizont]
-        forecast_data = data[forecast_cols].sum(axis=1).values
-        type_label = 0 #Storage type 0
-        for type_num in range(0, len(self.class_abs_thresholds)):
-            type_label = type_label + (forecast_data >= class_abs_thresholds[type_num])*(1) #Storage type type_num + 1 TODO
-
-        report = pd.DataFrame(columns=['ID', 'Type'])
-        report['ID'] = data['ID'].values
-        report['Type'] = type_label
-        return report
-
-
-    def _get_reports(self):
-        reports = []
-        true_labels = []
+    def simulation_report(self):
         periods = []
         roc_aucs = []
         mistakes = []
-        pr = Performance()
+        recommended_total_disk_sizes = []
+        true_total_disk_sizes = []
+
+        performance = Performance.Performance()
+
         current_period=self.begin
-        while current_period <= self.max_period - self.forecast_horizont:
-            current_period_data = self._data_at_period(data=self.data.copy(),\
-                                                       period=current_period)
-            current_period_report = self.recommendation_system._simulation_report(current_period_data)
-            true_label = self._true_lables_at_period(self.data.copy().irow(current_period_data.index),\
-                                                                     current_period,\
-                                                     self.forecast_horizont, self.class_abs_thresholds)
-            #roc_auc = pr.get_roc_auc(report=current_period_report, true_labels=true_label)
-            mistake = pr.get_mistakes_matrix(report=current_period_report, true_labels=true_label)
-            reports.append(current_period_report)
-            true_labels.append(true_label)
-            periods.append(current_period)
-            #roc_aucs.append(roc_auc)
+        while current_period <= self.max_period - self.recommendation_system.forecast_horizont:
+
+            period_data = self._get_period(data=self.data.copy(),\
+                                                       period=current_period,\
+                                                       forecast_horizont=self.recommendation_system.forecast_horizont,\
+                                                       class_abs_thresholds=self.recommendation_system.class_abs_thresholds)
+            period_report = self.recommendation_system._report2(period_data)
+
+            roc_auc = performance.get_roc_auc(report=period_report, period_data=period_data)
+            roc_aucs.append(roc_auc)
+
+            mistake = performance.get_mistakes_matrix(report=period_report, period_data=period_data)
             mistakes.append(mistake)
+
+            recommended_total_disk_size, true_total_disk_size = performance.get_total_size(report=period_report, period_data=period_data)
+            recommended_total_disk_sizes.append(recommended_total_disk_size)
+            true_total_disk_sizes.append(true_total_disk_size)
+
+            periods.append(current_period)
+
             current_period = current_period + self.step
-        return reports, true_labels, roc_aucs, mistakes, periods
+
+        simulation_report = pd.DataFrame(columns=['Periods', 'ROC_AUC', 'Mistakes', 'Recommended_total_disk_size', 'True_total_disk_size'])
+        simulation_report['Periods'] = periods
+        simulation_report['ROC_AUC'] = roc_aucs
+        simulation_report['Mistakes'] = mistakes
+        simulation_report['Recommended_total_disk_size'] = recommended_total_disk_sizes
+        simulation_report['True_total_disk_size'] = true_total_disk_sizes
+
+        return simulation_report

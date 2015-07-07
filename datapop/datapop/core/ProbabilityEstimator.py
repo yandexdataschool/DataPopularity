@@ -191,16 +191,16 @@ class ProbabilityEstimator(object):
         """
 
         train_data, train_columns, test_data, test_columns = self._data_preprocessing(self.data, self.forecast_horizont, self.class_abs_thresholds)
-        X_train = train_data[train_columns[self.forecast_horizont:]].astype(np.float).values
+        X_train = train_data[train_columns].astype(np.float).values
         Y_train = train_data['Type'].values
-        X_test = test_data[test_columns].values
+        X_test = test_data[test_columns].astype(np.float).values
 
         n_folds = 3
         folder = FoldingClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8),\
                                        n_folds=n_folds, features=None, random_state=42)
         folder.fit(X_train, Y_train)
         train_probabilities = folder.predict_proba(X_train)
-        test_probabilities = folder.predict_proba(X_train)
+        test_probabilities = folder.predict_proba(X_test)
         classes = folder.classes_
 
         train_report_proba_cols = ['Proba_Type_%d' % classes[i] for i in range(0, len(classes))]

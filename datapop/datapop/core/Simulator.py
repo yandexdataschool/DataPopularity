@@ -56,7 +56,7 @@ class Simulator(object):
         if forecast_horizont!=None and class_abs_thresholds!=None:
             class_abs_thresholds = np.array(class_abs_thresholds, ndmin=1)
             forecast_cols = number_columns[number_columns.index(str(period))+1:number_columns.index(str(period))+1+forecast_horizont]
-            cols_sum = data[forecast_cols][selection].sum(axis=1).values
+            cols_sum = (data[forecast_cols])[selection].sum(axis=1).values
             labels = 0
             for type_num in range(0, len(class_abs_thresholds)):
                 labels = labels*(cols_sum < class_abs_thresholds[type_num]) + (cols_sum >= class_abs_thresholds[type_num])*(type_num + 1)
