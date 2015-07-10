@@ -24,11 +24,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ProbabilityEstimator.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ProbabilityEstimator.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2361" max-vertical-offset="3510">
-              <caret line="174" column="21" selection-start-line="174" selection-start-column="21" selection-end-line="174" selection-end-column="96" />
+            <state vertical-scroll-proportion="0.8507463" vertical-offset="1011" max-vertical-offset="3510">
+              <caret line="113" column="33" selection-start-line="113" selection-start-column="33" selection-end-line="113" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -67,8 +67,8 @@
       <file leaf-file-name="Simulator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/datapop/core/Simulator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050">
-              <caret line="52" column="68" selection-start-line="52" selection-start-column="68" selection-end-line="52" selection-end-column="68" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="246" max-vertical-offset="1065">
+              <caret line="53" column="100" selection-start-line="53" selection-start-column="100" selection-end-line="53" selection-end-column="100" />
               <folding />
             </state>
           </provider>
@@ -84,10 +84,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Performance.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Performance.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/datapop/LHCb/Performance.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8880597" vertical-offset="51" max-vertical-offset="885">
+            <state vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="885">
               <caret line="51" column="90" selection-start-line="51" selection-start-column="90" selection-end-line="51" selection-end-column="90" />
               <folding />
             </state>
@@ -132,12 +132,12 @@
         <option value="$PROJECT_DIR$/datapop/LHCb/RecommendationSystem.py" />
         <option value="$PROJECT_DIR$/datapop/LHCb/DataPreprocessor.py" />
         <option value="$PROJECT_DIR$/datapop/LHCb/LHCbSimulator.py" />
-        <option value="$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py" />
-        <option value="$PROJECT_DIR$/datapop/core/Simulator.py" />
         <option value="$PROJECT_DIR$/datapop/LHCb/LRU.py" />
         <option value="$PROJECT_DIR$/datapop/LHCb/Origin.py" />
         <option value="$PROJECT_DIR$/datapop/LHCb/__init__.py" />
         <option value="$PROJECT_DIR$/datapop/LHCb/Performance.py" />
+        <option value="$PROJECT_DIR$/datapop/core/Simulator.py" />
+        <option value="$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py" />
       </list>
     </option>
   </component>
@@ -748,14 +748,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datapop/core/Simulator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050">
-          <caret line="52" column="68" selection-start-line="52" selection-start-column="68" selection-end-line="52" selection-end-column="68" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/datapop/LHCb/RecommendationSystem.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="1200">
@@ -768,14 +760,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="576" max-vertical-offset="1380">
           <caret line="57" column="8" selection-start-line="57" selection-start-column="8" selection-end-line="59" selection-end-column="108" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2361" max-vertical-offset="3510">
-          <caret line="174" column="21" selection-start-line="174" selection-start-column="21" selection-end-line="174" selection-end-column="96" />
           <folding />
         </state>
       </provider>
@@ -816,8 +800,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/datapop/LHCb/Performance.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8880597" vertical-offset="51" max-vertical-offset="885">
+        <state vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="885">
           <caret line="51" column="90" selection-start-line="51" selection-start-column="90" selection-end-line="51" selection-end-column="90" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datapop/core/Simulator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="246" max-vertical-offset="1065">
+          <caret line="53" column="100" selection-start-line="53" selection-start-column="100" selection-end-line="53" selection-end-column="100" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8507463" vertical-offset="1011" max-vertical-offset="3510">
+          <caret line="113" column="33" selection-start-line="113" selection-start-column="33" selection-end-line="113" selection-end-column="33" />
           <folding />
         </state>
       </provider>

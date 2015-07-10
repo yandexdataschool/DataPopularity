@@ -49,8 +49,9 @@ class Simulator(object):
         first = period_data['First']
         creation = period_data['Creation']
         now = period_data['Now']
-        avg_delay = (first - creation)[creation <= first].mean()
-        selection = (creation <= first) + (creation+avg_delay < now)
+        #avg_delay = (first - creation)[creation <= first].mean() + 2*(first - creation)[creation <= first].std()#!!!
+        #selection = (creation <= first) + (creation+avg_delay < now)
+        selection = period_data[number_columns[:number_columns.index(str(period))+1]].sum(axis=1)!=0
         period_data = period_data[selection]
 
         if forecast_horizont!=None and class_abs_thresholds!=None:

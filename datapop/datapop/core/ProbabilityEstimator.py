@@ -103,15 +103,15 @@ class ProbabilityEstimator(object):
         train_data[train_num_cols] = data[train_num_cols].values
         train_data['FirstUsage'] = (data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)
         train_data['Type'] = type_label
-        train_cols = train_num_cols + ['FirstUsage']
+        train_cols = train_num_cols + ['FirstUsage']#!!!!
 
         test_num_cols = number_columns[forecast_horizont:]
         test_data = pd.DataFrame(columns=['ID']+test_num_cols+['FirstUsage'])
         test_data['ID'] = data['ID'].values
         test_data[test_num_cols] = data[test_num_cols].values
-        test_data['FirstUsage'] = (data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)#+\
-                                  #self.forecast_horizont*((data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)!=0)#!!!!!!!
-        test_cols = test_num_cols + ['FirstUsage']
+        test_data['FirstUsage'] = (data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)+\
+                                  self.forecast_horizont*((data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)!=0)#!!!!!!!
+        test_cols = test_num_cols + ['FirstUsage']#!!!!
 
         return train_data, train_cols, test_data, test_cols
 
