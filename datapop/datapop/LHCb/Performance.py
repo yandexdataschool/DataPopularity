@@ -46,6 +46,8 @@ class Performance(object):
         :param pandas.DataFrame period_data: data for which the report was generated.
         :return: (float, float) recommended and true(with mistakes) total disk sizes.
         """
-        recommended_total_disk_size = (period_data['DiskSize'])[report['Recommended_Type'].values==1].sum(axis=0)
-        true_total_disk_size = (period_data['DiskSize'])[period_data['True_Type'].values==1].sum(axis=0)
+        total_size = period_data['DiskSize'].values.sum(axis=0)
+        recommended_total_disk_size = (period_data['DiskSize'])[report['Recommended_Type'].values==1].sum(axis=0)/total_size
+        selection = (report['Recommended_Type'].values==1) + (period_data['True_Type'].values==1)
+        true_total_disk_size = (period_data['DiskSize'])[selection].sum(axis=0)/total_size
         return recommended_total_disk_size, true_total_disk_size

@@ -94,7 +94,8 @@ class ProbabilityEstimator(object):
         fh_data_values = data[number_columns[-forecast_horizont:]].sum(axis=1).values
         type_label = 0 #Storage type 0
         for type_num in range(0, len(self.class_abs_thresholds)):
-            type_label = type_label + (fh_data_values >= class_abs_thresholds[type_num])*(1) #Storage type type_num + 1 TODO
+            type_label = type_label*(fh_data_values < class_abs_thresholds[type_num]) +\
+                         (fh_data_values >= class_abs_thresholds[type_num])*(type_num+1) #Storage type type_num + 1 TODO
 
         train_num_cols = number_columns[:-forecast_horizont]
         train_data = pd.DataFrame(columns=['ID']+train_num_cols+['FirstUsage', 'Type'])
@@ -108,7 +109,8 @@ class ProbabilityEstimator(object):
         test_data = pd.DataFrame(columns=['ID']+test_num_cols+['FirstUsage'])
         test_data['ID'] = data['ID'].values
         test_data[test_num_cols] = data[test_num_cols].values
-        test_data['FirstUsage'] = (data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)
+        test_data['FirstUsage'] = (data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)#+\
+                                  #self.forecast_horizont*((data[number_columns].values.cumsum(axis=1)!=0).sum(axis=1)!=0)#!!!!!!!
         test_cols = test_num_cols + ['FirstUsage']
 
         return train_data, train_cols, test_data, test_cols
@@ -148,10 +150,12 @@ class ProbabilityEstimator(object):
         test_data, test_columns, _, _ = self._data_preprocessing(self.data, self.forecast_horizont, self.class_abs_thresholds)
         X_test = test_data[test_columns[self.forecast_horizont:]].astype(np.float).values
         Y_test = test_data['Type'].values
+        self.test = test_data
 
         train_data, train_columns, _, _ = self._data_preprocessing(test_data[['ID']+test_columns], self.forecast_horizont, self.class_abs_thresholds)
         X_train = train_data[train_columns].astype(np.float).values
         Y_train = train_data['Type'].values
+        self.train = train_data
 
         n_folds = 2
         folder = FoldingClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8),\
@@ -171,13 +175,13 @@ class ProbabilityEstimator(object):
         train_report_proba_cols = ['Proba_Type_%d' % classes[i] for i in range(0, len(classes))]
         train_report = pd.DataFrame(columns=['ID', 'Type']+train_report_proba_cols)
         train_report['ID'] = train_data['ID'].values
-        train_report['Type'] = train_data['Type']
+        train_report['Type'] = train_data['Type'].values
         train_report[train_report_proba_cols] = train_probabilities
 
         test_report_proba_cols = ['Proba_Type_%d' % classes[i] for i in range(0, len(classes))]
         test_report = pd.DataFrame(columns=['ID', 'Type']+test_report_proba_cols)
         test_report['ID'] = test_data['ID'].values
-        test_report['Type'] = test_data['Type']
+        test_report['Type'] = test_data['Type'].values
         test_report[test_report_proba_cols] = test_probabilities
 
         return roc_auc_train, roc_auc_test, train_report, test_report
@@ -194,6 +198,8 @@ class ProbabilityEstimator(object):
         X_train = train_data[train_columns].astype(np.float).values
         Y_train = train_data['Type'].values
         X_test = test_data[test_columns].astype(np.float).values
+        self.train2= train_data
+        self.test2= test_data
 
         n_folds = 3
         folder = FoldingClassifier(GradientBoostingClassifier(learning_rate=0.02, n_estimators=2500, max_depth=6, subsample=0.8),\
@@ -206,7 +212,7 @@ class ProbabilityEstimator(object):
         train_report_proba_cols = ['Proba_Type_%d' % classes[i] for i in range(0, len(classes))]
         train_report = pd.DataFrame(columns=['ID', 'Current_Type']+train_report_proba_cols)
         train_report['ID'] = train_data['ID'].values
-        train_report['Current_Type'] = train_data['Type']
+        train_report['Current_Type'] = train_data['Type'].values
         train_report[train_report_proba_cols] = train_probabilities
         self.train_report = train_report
 
@@ -216,7 +222,7 @@ class ProbabilityEstimator(object):
         test_report[test_report_proba_cols] = test_probabilities
         self.test_report = test_report
 
-        return test_report
+        return train_report
 
 
 
