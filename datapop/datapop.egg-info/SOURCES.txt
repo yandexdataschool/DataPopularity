@@ -12,6 +12,14 @@ datapop.egg-info/pbr.json
 datapop.egg-info/requires.txt
 datapop.egg-info/top_level.txt
 datapop/LHCb/DataPreprocessor.py
+datapop/LHCb/LHCbSimulator.py
+datapop/LHCb/LRU.py
+datapop/LHCb/Origin.py
+datapop/LHCb/Performance.py
+datapop/LHCb/RecommendationSystem.py
 datapop/LHCb/__init__.py
+datapop/core/DataDistribution.py
+datapop/core/ForecastNumberAccesses.py
 datapop/core/ProbabilityEstimator.py
+datapop/core/Simulator.py
 datapop/core/__init__.py
