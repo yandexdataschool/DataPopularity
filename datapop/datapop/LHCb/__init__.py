@@ -6,3 +6,4 @@ from .LHCbSimulator import LHCbSimulator
 from .Performance import Performance
 from .LRU import LRU
 from .Origin import Origin
+from .KernelRegression import KernelRegression

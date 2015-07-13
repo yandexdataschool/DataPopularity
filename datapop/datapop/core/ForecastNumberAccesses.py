@@ -144,9 +144,9 @@ class ForecastNumberAccesses(object):
             type_label = 0 #Storage type 0
             for type_num in range(0, len(self.class_abs_thresholds)):
                 type_label = type_label + (fh_data_values >= self.class_abs_thresholds[type_num])*(type_num + 1) #Storage type type_num + 1
-            forecast_data['Predict_Type'] = type_label
+            forecast_data['Recommended_Type'] = type_label
             self.forecast_data = forecast_data
-            return forecast_data[['ID']+forecast_cols+['Predict_Type']]
+            return forecast_data[['ID']+forecast_cols+['Recommended_Type']]
         else:
             self.forecast_data = forecast_data
             return forecast_data[['ID']+forecast_cols]
