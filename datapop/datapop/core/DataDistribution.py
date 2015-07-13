@@ -84,3 +84,9 @@ class DataDistribution(object):
 
         return risk_table
 
+    def lhcb_conservative(self, probability_report, dist_report):
+        current_type = probability_report['Current_Type'].astype(np.int).values
+        report = dist_report
+        report['Recommended_Type'] = report['Recommended_Type'].astype(np.int).values | current_type
+        return report
+

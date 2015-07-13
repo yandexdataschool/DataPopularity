@@ -46,8 +46,11 @@ class RecommendationSystem(object):
         probability_report = ProbabilityEstimator(data=preprocessed_data,\
                                            forecast_horizont=self.forecast_horizont,\
                                            class_abs_thresholds=self.class_abs_thresholds).get_probabilities()
-        report = DataDistribution().risk_minimization(probability_report=probability_report,\
+        self.probability_report = probability_report
+        risk_report = DataDistribution().risk_minimization(probability_report=probability_report,\
                                                       risk_matrix=self.risk_matrix)
+        self.risk_report = risk_report
+        report = DataDistribution().lhcb_conservative(probability_report, risk_report)
         return report
 
     def _get_preprocessed_data(self, data=None):
@@ -69,6 +72,7 @@ class RecommendationSystem(object):
         probability_report = ProbabilityEstimator(data=preprocessed_data,\
                                            forecast_horizont=self.forecast_horizont,\
                                            class_abs_thresholds=self.class_abs_thresholds).get_probabilities()
-        report = DataDistribution().risk_minimization(probability_report=probability_report,\
+        risk_report = DataDistribution().risk_minimization(probability_report=probability_report,\
                                                       risk_matrix=self.risk_matrix)
+        report = DataDistribution().lhcb_conservative(probability_report, risk_report)
         return report
