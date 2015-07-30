@@ -27,17 +27,27 @@
       <file leaf-file-name="HMMPredict.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/datapop/core/HMMPredict.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="1815">
-              <caret line="41" column="23" selection-start-line="41" selection-start-column="23" selection-end-line="41" selection-end-column="23" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1815">
+              <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Simulator.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DisorderTimeDetection.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/datapop/LHCb/DisorderTimeDetection.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.1119403" vertical-offset="60" max-vertical-offset="1635">
+              <caret line="10" column="18" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Simulator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/datapop/core/Simulator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6641791" vertical-offset="246" max-vertical-offset="1065">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1065">
               <caret line="52" column="58" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
               <folding />
             </state>
@@ -47,7 +57,7 @@
       <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/datapop/core/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="195">
+            <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="195">
               <caret line="6" column="15" selection-start-line="6" selection-start-column="15" selection-end-line="6" selection-end-column="15" />
               <folding />
             </state>
@@ -57,7 +67,7 @@
       <file leaf-file-name="ProbabilityEstimator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3525">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1395" max-vertical-offset="3525">
               <caret line="93" column="8" selection-start-line="93" selection-start-column="8" selection-end-line="97" selection-end-column="88" />
               <folding />
             </state>
@@ -93,12 +103,13 @@
         <option value="$PROJECT_DIR$/datapop/core/DataDistribution.py" />
         <option value="$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py" />
         <option value="$PROJECT_DIR$/datapop/LHCb/KernelRegeression.py" />
-        <option value="$PROJECT_DIR$/datapop/LHCb/__init__.py" />
         <option value="$PROJECT_DIR$/datapop/core/ForecastNumberAccesses.py" />
         <option value="$PROJECT_DIR$/datapop/core/HMMProba.py" />
         <option value="$PROJECT_DIR$/datapop/core/__init__.py" />
         <option value="$PROJECT_DIR$/datapop/core/HMMPredict.py" />
         <option value="$PROJECT_DIR$/datapop/core/Simulator.py" />
+        <option value="$PROJECT_DIR$/datapop/LHCb/__init__.py" />
+        <option value="$PROJECT_DIR$/datapop/LHCb/DisorderTimeDetection.py" />
       </list>
     </option>
   </component>
@@ -394,13 +405,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/datapop/DataPopularityEstimator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3396" max-vertical-offset="4200">
-          <caret line="22" column="42" selection-start-line="22" selection-start-column="42" selection-end-line="22" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/datapop/core/ProbabilityEstimator.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="831" max-vertical-offset="2205">
@@ -524,7 +528,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="375" max-vertical-offset="540">
           <caret line="25" column="17" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -575,7 +578,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="100">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -640,7 +642,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4664179" vertical-offset="0" max-vertical-offset="804">
           <caret line="25" column="17" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -707,13 +708,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datapop/LHCb/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="225">
-          <caret line="8" column="46" selection-start-line="8" selection-start-column="46" selection-end-line="8" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/datapop/LHCb/RecommendationSystem.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="189" max-vertical-offset="1260">
@@ -752,18 +746,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datapop/core/HMMPredict.py">
+    <entry file="file://$PROJECT_DIR$/datapop/core/Simulator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="1815">
-          <caret line="41" column="23" selection-start-line="41" selection-start-column="23" selection-end-line="41" selection-end-column="23" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1065">
+          <caret line="52" column="58" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datapop/core/Simulator.py">
+    <entry file="file://$PROJECT_DIR$/datapop/LHCb/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6641791" vertical-offset="246" max-vertical-offset="1065">
-          <caret line="52" column="58" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
+        <state vertical-scroll-proportion="0.16791044" vertical-offset="0" max-vertical-offset="804">
+          <caret line="9" column="56" selection-start-line="9" selection-start-column="56" selection-end-line="9" selection-end-column="56" />
+          <folding>
+            <element signature="e#26#72#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datapop/core/HMMPredict.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1815">
+          <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datapop/LHCb/DisorderTimeDetection.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1119403" vertical-offset="60" max-vertical-offset="1635">
+          <caret line="10" column="18" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
           <folding />
         </state>
       </provider>
