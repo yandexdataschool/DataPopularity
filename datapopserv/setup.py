@@ -13,7 +13,7 @@ setup(
         'flask == 0.10.1',
         'flask-restful == 0.3.2',
         'Werkzeug == 0.10.1',
-        'rep==0.5.0',
+        'rep>=0.6.0',
         'datapop==0.2.0'
     ],
 )

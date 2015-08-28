@@ -4,7 +4,7 @@ from flask import Flask, request, redirect, url_for, flash, send_from_directory
 from flask.ext.restful import reqparse, abort, Api, Resource
 import werkzeug
 
-from datapop import DataPopularityEstimator, DataIntensityPredictor, DataPlacementOptimizer, Performance
+from datapop import DataPopularityEstimator, DataIntensityPredictor, DataPlacementOptimizer, Performance, Filters
 import rep
 import numpy as np
 import pandas as pd
@@ -178,6 +178,71 @@ class DataPopularityApi(Resource):
     def delete(self, session_id):
         pass
 
+#NTB Filter
+class NTBFilterApi(Resource):
+    def take_params(self, req):
+        get_params = ast.literal_eval(req)
+        params = {}
+        params['N'] = get_params['N'] if get_params.has_key('N') else 0
+        params['mode'] = get_params['mode'] if get_params.has_key('mode') else 'base'
+        return params
+
+    def get(self, session_id):
+        return 'ntb_filter_report.csv  ' \
+               'is in your working directory.'
+
+    def post(self, session_id):
+        params = self.take_params(request.form['params'])
+        data_folder = data_popularity_data + session_id
+        data_path = data_folder + '/data.csv'
+
+        try:
+            data = pd.read_csv(data_path)
+        except:
+            print 'Can not to opent file. Please, upload the data.'
+
+        try:
+            popularity_report = pd.read_csv(data_folder + '/popularity.csv')
+            prediction_report = pd.read_csv(data_folder + '/prediction.csv')
+            opti_report = pd.read_csv(data_folder + '/opti_report.csv')
+        except:
+            print 'Can not to open files popularity.csv, prediction.csv and opti_report.csv. Please use DataPopularityApi to create the files.'
+
+        ntb_filter = Filters(popularity_report, prediction_report, opti_report, data)
+        ntb_filter_report, saved_space = ntb_filter.SaveNTB(N=params['N'], mode=params['mode'])
+
+        ntb_filter_report.to_csv(data_folder + '/ntb_filter_report.csv')
+
+        return '%.2f TB was saved. The report was generated as ntb_filter_report.csv file.'
+
+    def put(self, session_id):
+        params = self.take_params(request.form['params'])
+        data_folder = data_popularity_data + session_id
+        data_path = data_folder + '/data.csv'
+
+        try:
+            data = pd.read_csv(data_path)
+        except:
+            print 'Can not to opent file. Please, upload the data.'
+
+        try:
+            popularity_report = pd.read_csv(data_folder + '/popularity.csv')
+            prediction_report = pd.read_csv(data_folder + '/prediction.csv')
+            opti_report = pd.read_csv(data_folder + '/opti_report.csv')
+        except:
+            print 'Can not to open files popularity.csv, prediction.csv and opti_report.csv. Please use DataPopularityApi to create the files.'
+
+        ntb_filter = Filters(popularity_report, prediction_report, opti_report, data)
+        ntb_filter_report, saved_space = ntb_filter.SaveNTB(N=params['N'], mode=params['mode'])
+
+        ntb_filter_report.to_csv(data_folder + '/ntb_filter_report.csv')
+
+        return '%.2f TB was saved. The report was generated as ntb_filter_report.csv file.'
+
+
+    def delete(self, session_id):
+        pass
+
 
 class DataDownload(Resource):
      def get(self, session_id, filename):
@@ -191,6 +256,7 @@ class DataDownload(Resource):
 api.add_resource(GetSessionId, '/')
 api.add_resource(DataUpload, '/<string:session_id>/Upload')
 api.add_resource(DataPopularityApi, '/<string:session_id>/DataPopularityApi')
+api.add_resource(NTBFilterApi, '/<string:session_id>/NTBFilterApi')
 api.add_resource(DataDownload, '/<string:session_id>/Download/<string:filename>')
 
 
