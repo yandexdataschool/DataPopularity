@@ -24,3 +24,8 @@ try:
     from .Performance import Performance
 except:
     pass
+
+try:
+    from .Filters import Filters
+except:
+    pass

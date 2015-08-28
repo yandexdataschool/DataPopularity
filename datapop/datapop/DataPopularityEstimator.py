@@ -23,7 +23,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve, auc
 from rep.metaml import FoldingClassifier #new
 import matplotlib.pyplot as plt
-from rep.classifiers import SklearnClassifier #scikit-learn branch
+from rep.estimators import SklearnClassifier #scikit-learn branch
 from sklearn.ensemble import GradientBoostingClassifier #scikit-learn branch
 from .DataBase import DataBase
 

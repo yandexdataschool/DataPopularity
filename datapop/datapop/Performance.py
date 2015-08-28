@@ -33,12 +33,11 @@ class Performance(object):
         self.data_origin = data
         self._fix_columns()
 
-        selection = (self.data_origin.sort(columns='Name')['Nb_Replicas']>=1.).values #In DataPlacementOptimizer TODO
-        self.data_origin = self.data_origin.sort(columns='Name')[selection]
+        self.data_origin = self.data_origin.sort(columns='Name')
 
         self.nb_of_weeks = nb_of_weeks
-        self.popularity_report = popularity_report.sort(columns='Name')[selection]
-        self.prediction_report = prediction_report.sort(columns='Name')[selection]
+        self.popularity_report = popularity_report.sort(columns='Name')
+        self.prediction_report = prediction_report.sort(columns='Name')
         self.report = report.sort(columns='Name')
 
 
