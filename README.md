@@ -16,3 +16,5 @@ This service can be launched and can be used instead of the datapop library. Dat
 **Datapopclient** is python wrapper for API of data popularity service. The wrapper provides the convenient way to work with service.
 
 Look at [howto](https://github.com/yandexdataschool/DataPopularity/tree/master/howto) for the more details.
+
+Sample files processed by datapop you can find [in howto](https://github.com/yandexdataschool/DataPopularity/blob/master/howto/Data/popularity-728days.csv)
