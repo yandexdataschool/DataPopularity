@@ -1,6 +1,11 @@
 __author__ = 'Mikhail Hushchyn'
 
 try:
+    from .DataPreparation import DataPreparation
+except:
+    pass
+
+try:
     from .DataPopularityEstimator import DataPopularityEstimator
 except:
     pass
