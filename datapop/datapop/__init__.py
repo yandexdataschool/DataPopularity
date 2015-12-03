@@ -6,6 +6,11 @@ except:
     pass
 
 try:
+    from .AccessProbabilityPrediction import AccessProbabilityPrediction
+except:
+    pass
+
+try:
     from .DataPopularityEstimator import DataPopularityEstimator
 except:
     pass
