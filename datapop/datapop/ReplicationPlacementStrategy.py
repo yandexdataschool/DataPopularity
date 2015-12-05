@@ -148,16 +148,16 @@ class ReplicationPlacementStrategy(object):
         kernel_predictions_list = []
         max_reuse_distance_list = self._max_reuse_distance(access_time_series[:, -window_to_past:])
         total_frequency_week_list = self._total_fraquency_week(access_time_series[:, -window_to_past:])
-        lists = zip(access_time_series, first_used_list, max_reuse_distance_list)
-        for dataset, first_used, max_reuse_distance in lists:
+        lists = zip(access_time_series, first_used_list, total_frequency_week_list)
+        for dataset, first_used, total_frequency_week in lists:
             # index = min(window_to_past, first_used)
             index = window_to_past
             x_coords = numpy.array([[x_val] for x_val in range(0, index)])
             y_values = dataset[-index:]
-            #selection = total_frequency_week_list == total_frequency_week
-            #windows = max_reuse_distance_list[selection]
-            #window = int(numpy.percentile(windows, 80)) + 1
-            window = min(max_reuse_distance, index)
+            selection = total_frequency_week_list == total_frequency_week
+            windows = max_reuse_distance_list[selection]
+            window = int(numpy.percentile(windows, 80)) + 1
+            window = min(window, index)
             kernel_regressor = KernelRegression(kernel="rbf", gamma=numpy.logspace(-2, 2, 10))
             y_kernel = kernel_regressor.fit(x_coords, y_values).predict(x_coords)
             #y_kernel = y_values
