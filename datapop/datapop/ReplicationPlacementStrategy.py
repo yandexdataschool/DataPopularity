@@ -161,8 +161,7 @@ class ReplicationPlacementStrategy(object):
             kernel_regressor = KernelRegression(kernel="rbf", gamma=numpy.logspace(-2, 2, 10))
             y_kernel = kernel_regressor.fit(x_coords, y_values).predict(x_coords)
             #y_kernel = y_values
-            #y_rolling_mean = pandas.rolling_mean(y_kernel, window=window, axis=1)
-            y_rolling_mean = y_kernel
+            y_rolling_mean = pandas.rolling_mean(y_kernel, window=window, axis=1)
             kernel_prediction = y_rolling_mean[-1]
             kernel_predictions_list.append(kernel_prediction)
         return numpy.array(kernel_predictions_list)
