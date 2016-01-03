@@ -1,263 +1,165 @@
 __author__ = 'mikhail91'
 
-from flask import Flask, request, redirect, url_for, flash, send_from_directory
-from flask.ext.restful import reqparse, abort, Api, Resource
-import werkzeug
+# datapopserv 3.0
 
-from datapop import DataPopularityEstimator, DataIntensityPredictor, DataPlacementOptimizer, Performance, Filters
-import rep
+from flask import Flask, request, send_from_directory
+from flask.ext.restful import reqparse, abort, Api, Resource
+
+from datapop import ReplicationPlacementStrategy
 import numpy as np
 import pandas as pd
-import re
 import os
 import ast
 
 ALLOWED_EXTENSIONS = set(['csv'])
 
-#
 app = Flask(__name__)
 api = Api(app)
 
 working_dir = os.environ.get('WORKING_DIR')
 data_popularity_data = working_dir + '/'
 
-#Get session_id
-class GetSessionId(Resource):
-    session_id=''
-
-    def get(self):
-        return 'Use POST to generate new session_id.'
-
-    def post(self):
-        self.session_id = str(np.random.randint(low=100, high=10000000000))
-        while os.path.exists(data_popularity_data + self.session_id):
-            self.session_id = str(np.random.randint(low=100, high=10000000000))
-        os.makedirs(data_popularity_data + self.session_id)
-        return 'Your NEW session_id = '+self.session_id
-
-    def put(self):
-        return 'Use POST to generate new session_id.'
-
-    def delete(self):
-        return 'Your can not delete your session_id.'
-
-#Data Uploading
-class DataUpload(Resource):
-
-    def allowed_file(self, filename):
-        return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-    def get(self, session_id):
-        return 'Your data was saved as data.csv file.'
-
-    def post(self, session_id):
-        file = request.files['file']
-        if file and self.allowed_file(file.filename):
-            data_path = data_popularity_data + session_id + '/' + 'data.csv'
-            file.save(data_path)
-        else:
-            return 'Please, send a data file in .csv format.'
-        return 'Your data was saved as data.csv file.'
-
-    def put(self, session_id):
-        file = request.files['file']
-        if file and self.allowed_file(file.filename):
-            data_path = data_popularity_data+ session_id + '/' + 'data.csv'
-            file.save(data_path)
-        return 'Your data was saved as data.csv file.'
-
-    def delete(self):
-        pass
 
 
 #DataPopularity
 class DataPopularityApi(Resource):
+    """
+    This class is for datapop library
+    """
+
+    def get_session_id(self):
+        """
+        Generate a session id and crate directory for the session.
+        :return: int: session id
+        """
+
+        self.session_id = str(np.random.randint(low=100, high=10000000000))
+
+        while os.path.exists(data_popularity_data + self.session_id):
+            self.session_id = str(np.random.randint(low=100, high=10000000000))
+
+        os.makedirs(data_popularity_data + self.session_id)
+
+        return self.session_id
+
+    def allowed_file(self, filename):
+        """
+        Check a file extention
+        :param string filename: name fo the file
+        :return: boolean
+        """
+        return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+    def data_upload(self, session_id):
+        """
+        Method for data upload
+        :param int session_id: a session id
+        :return: int
+        """
+
+        file = request.files['file']
+
+        if file and self.allowed_file(file.filename):
+
+            data_path = data_popularity_data + session_id + '/' + 'data.csv'
+            file.save(data_path)
+
+        else:
+            return 0
+
+        return 1
+
     def take_params(self, req):
+        """
+        Take request parameters
+        :param req: request
+        :return: dict: parameters
+        """
+
         get_params = ast.literal_eval(req)
+
         params = {}
-        params['nb_of_weeks'] = get_params['nb_of_weeks'] if get_params.has_key('nb_of_weeks') else 104
-        params['q'] = get_params['q'] if get_params.has_key('q') else None
-        params['set_replicas'] = get_params['set_replicas'] if get_params.has_key('set_replicas') else 'auto'
-        params['c_disk'] = get_params['c_disk'] if get_params.has_key('c_disk') else 100
-        params['c_tape'] = get_params['c_tape'] if get_params.has_key('c_tape') else 1
-        params['c_miss'] = get_params['c_miss'] if get_params.has_key('c_miss') else 2000
-        params['alpha'] = get_params['alpha'] if get_params.has_key('alpha') else 1
-        params['max_replicas'] = get_params['max_replicas'] if get_params.has_key('max_replicas') else 4
+        params['mode'] = get_params['mode'] if get_params.has_key('mode') else 'save'
+        params['n_tb'] = get_params['n_tb'] if get_params.has_key('n_tb') else None
+        params['proba_threshold'] = get_params['proba_threshold'] if get_params.has_key('proba_threshold') else 0.01
         params['min_replicas'] = get_params['min_replicas'] if get_params.has_key('min_replicas') else 1
-        params['method'] = get_params['method'] if get_params.has_key('method') else 'opti'
-        params['pop_cut'] = get_params['pop_cut'] if get_params.has_key('pop_cut') else -1
-        params['t_disk'] = get_params['t_disk'] if get_params.has_key('t_disk') else 0.1
-        params['t_tape'] = get_params['t_tape'] if get_params.has_key('t_tape') else 3
-        params['const_tape'] = get_params['const_tape'] if get_params.has_key('const_tape') else 24
+        params['max_replicas'] = get_params['max_replicas'] if get_params.has_key('max_replicas') else 7
+
         return params
 
-    def get(self, session_id):
-        return 'Files data.csv, popularity.csv, prediction.csv, report.csv and opti_report.csv, opti_performance_report.csv and performance_report.csv  ' \
-               'are in your working directory.'
 
-    def post(self, session_id):
+
+
+
+
+    def post(self):
+        """
+        Method for a POST request
+        :return:
+        """
+
+        # generate a session id
+        session_id = self.get_session_id()
+
+        # upload data
+        upload_msg = self.data_upload(session_id)
+
+
+
+        # datapop
         params = self.take_params(request.form['params'])
+
         data_folder = data_popularity_data + session_id
+
         data_path = data_folder + '/data.csv'
         data = pd.read_csv(data_path)
 
-        estimator = DataPopularityEstimator(data=data, nb_of_weeks=params['nb_of_weeks'])
-        estimator.train()
-        popularity_report = estimator.get_popularity()
-        popularity_report.to_csv(data_folder + '/popularity.csv')
+        rps = ReplicationPlacementStrategy(data, params['min_replicas'], params['max_replicas'])
+
+        if params['mode'] == 'save':
+            report = rps.save_n_tb(params['n_tb'])
+
+        elif params['mode'] == 'fill':
+            report = rps.fill_n_tb(params['n_tb'])
+
+        elif params['mode'] == 'clean':
+            report = rps.clean_n_tb(params['n_tb'], params['proba_threshold'])
+
+        elif params['mode'] == 'combine':
+            report = rps.get_combine_report(data)
+
+        report.to_csv(data_folder + '/report.csv')
 
 
-        predictor = DataIntensityPredictor(data=data, nb_of_weeks=params['nb_of_weeks'])
-        prediction_report = predictor.predict(zero_one_scale=False)
-        prediction_report.to_csv(data_folder + '/prediction.csv')
+        # return .csv report or a text message
+        if upload_msg == 1:
+            return send_from_directory(data_folder, filename='report.csv', as_attachment=True)
 
-        optimizer = DataPlacementOptimizer(popularity_report, prediction_report, data=data)
-        if params['method']=='opti':
-            opti_report = optimizer.opti_placement(q=params['q'], set_replicas=params['set_replicas'],\
-                                                   c_disk=params['c_disk'], \
-                                                   c_tape=params['c_tape'], \
-                                                   c_miss=params['c_miss'], \
-                                                   alpha=params['alpha'], \
-                                                   min_replicas=params['min_replicas'],\
-                                                   max_replicas=params['max_replicas'])
-            opti_report.to_csv(data_folder + '/opti_report.csv')
-
-            performance = Performance(data, popularity_report=popularity_report, prediction_report=prediction_report, report=opti_report)
-            opti_performance_report = performance.get_performance_report(t_disk=params['t_disk'], t_tape=params['t_tape'], const_tape=params['const_tape'])
-            opti_performance_report.to_csv(data_folder + '/opti_performance_report.csv')
-            return 'Data Popularity report was generated as opti_report.csv file and performance report was generated as opti_performance_report.csv file.'
-        else :
-            report = optimizer.get_report(q=params['q'], pop_cut=params['pop_cut'], set_replicas=params['set_replicas'],\
-                                                   alpha=params['alpha'], \
-                                                   min_replicas=params['min_replicas'],\
-                                                   max_replicas=params['max_replicas'])
-            report.to_csv(data_folder + '/report.csv')
-
-            performance = Performance(data, popularity_report=popularity_report, prediction_report=prediction_report, report=report)
-            performance_report = performance.get_performance_report(t_disk=params['t_disk'], t_tape=params['t_tape'], const_tape=params['const_tape'])
-            performance_report.to_csv(data_folder + '/performance_report.csv')
-            return 'Data Popularity report was generated as report.csv file and performance report was generated as performance_report.csv file.'
-
-    def put(self, session_id):
-        params = self.take_params(request.form['params'])
-        data_folder = data_popularity_data + session_id
-        data_path = data_folder + '/data.csv'
-        data = pd.read_csv(data_path)
-
-        popularity_report = pd.read_csv(data_folder + '/popularity.csv')
-        prediction_report = pd.read_csv(data_folder + '/prediction.csv')
-
-        optimizer = DataPlacementOptimizer(popularity_report, prediction_report, data=data)
-        if params['method']=='opti':
-            opti_report = optimizer.opti_placement(q=params['q'], set_replicas=params['set_replicas'],\
-                                                   c_disk=params['c_disk'], \
-                                                   c_tape=params['c_tape'], \
-                                                   c_miss=params['c_miss'], \
-                                                   alpha=params['alpha'], \
-                                                   min_replicas=params['min_replicas'],\
-                                                   max_replicas=params['max_replicas'])
-            opti_report.to_csv(data_folder + '/opti_report.csv')
-
-            performance = Performance(data, popularity_report=popularity_report, prediction_report=prediction_report, report=opti_report)
-            opti_performance_report = performance.get_performance_report(t_disk=params['t_disk'], t_tape=params['t_tape'], const_tape=params['const_tape'])
-            opti_performance_report.to_csv(data_folder + '/opti_performance_report.csv')
-            return 'Data Popularity report was generated as opti_report.csv file and performance report was generated as opti_performance_report.csv file.'
-        else :
-            report = optimizer.get_report(q=params['q'], pop_cut=params['pop_cut'], set_replicas=params['set_replicas'],\
-                                                   alpha=params['alpha'], \
-                                                   min_replicas=params['min_replicas'],\
-                                                   max_replicas=params['max_replicas'])
-            report.to_csv(data_folder + '/report.csv')
-
-            performance = Performance(data, popularity_report=popularity_report, prediction_report=prediction_report, report=report)
-            performance_report = performance.get_performance_report(t_disk=params['t_disk'], t_tape=params['t_tape'], const_tape=params['const_tape'])
-            performance_report.to_csv(data_folder + '/performance_report.csv')
-            return 'Data Popularity report was generated as report.csv file and performance report was generated as performance_report.csv file.'
+        else:
+            return 'Upload data in .csv format.'
 
 
-    def delete(self, session_id):
-        pass
+    def put(self):
+        """
+        Method for a PUT request
+        :return:
+        """
+        self.post()
 
-#NTB Filter
-class NTBFilterApi(Resource):
-    def take_params(self, req):
-        get_params = ast.literal_eval(req)
-        params = {}
-        params['N'] = get_params['N'] if get_params.has_key('N') else 0
-        params['mode'] = get_params['mode'] if get_params.has_key('mode') else 'base'
-        return params
-
-    def get(self, session_id):
-        return 'ntb_filter_report.csv  ' \
-               'is in your working directory.'
-
-    def post(self, session_id):
-        params = self.take_params(request.form['params'])
-        data_folder = data_popularity_data + session_id
-        data_path = data_folder + '/data.csv'
-
-        try:
-            data = pd.read_csv(data_path)
-        except:
-            print 'Can not to opent file. Please, upload the data.'
-
-        try:
-            popularity_report = pd.read_csv(data_folder + '/popularity.csv')
-            prediction_report = pd.read_csv(data_folder + '/prediction.csv')
-            opti_report = pd.read_csv(data_folder + '/opti_report.csv')
-        except:
-            print 'Can not to open files popularity.csv, prediction.csv and opti_report.csv. Please use DataPopularityApi to create the files.'
-
-        ntb_filter = Filters(popularity_report, prediction_report, opti_report, data)
-        ntb_filter_report, saved_space = ntb_filter.SaveNTB(N=params['N'], mode=params['mode'])
-
-        ntb_filter_report.to_csv(data_folder + '/ntb_filter_report.csv')
-
-        return '%.2f TB was saved. The report was generated as ntb_filter_report.csv file.'
-
-    def put(self, session_id):
-        params = self.take_params(request.form['params'])
-        data_folder = data_popularity_data + session_id
-        data_path = data_folder + '/data.csv'
-
-        try:
-            data = pd.read_csv(data_path)
-        except:
-            print 'Can not to opent file. Please, upload the data.'
-
-        try:
-            popularity_report = pd.read_csv(data_folder + '/popularity.csv')
-            prediction_report = pd.read_csv(data_folder + '/prediction.csv')
-            opti_report = pd.read_csv(data_folder + '/opti_report.csv')
-        except:
-            print 'Can not to open files popularity.csv, prediction.csv and opti_report.csv. Please use DataPopularityApi to create the files.'
-
-        ntb_filter = Filters(popularity_report, prediction_report, opti_report, data)
-        ntb_filter_report, saved_space = ntb_filter.SaveNTB(N=params['N'], mode=params['mode'])
-
-        ntb_filter_report.to_csv(data_folder + '/ntb_filter_report.csv')
-
-        return '%.2f TB was saved. The report was generated as ntb_filter_report.csv file.'
+    def get(self):
+        """
+        Method for a GET request
+        :return: text message
+        """
+        return "Hello, user! Use POST request."
 
 
-    def delete(self, session_id):
-        pass
-
-
-class DataDownload(Resource):
-     def get(self, session_id, filename):
-         data_folder = data_popularity_data + session_id
-         return send_from_directory(data_folder, filename=filename, as_attachment=True)
 
 
 
 
 #Add API
-api.add_resource(GetSessionId, '/')
-api.add_resource(DataUpload, '/<string:session_id>/Upload')
-api.add_resource(DataPopularityApi, '/<string:session_id>/DataPopularityApi')
-api.add_resource(NTBFilterApi, '/<string:session_id>/NTBFilterApi')
-api.add_resource(DataDownload, '/<string:session_id>/Download/<string:filename>')
+api.add_resource(DataPopularityApi, '/')
 
 
 if __name__ == '__main__':
