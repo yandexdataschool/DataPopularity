@@ -6,194 +6,200 @@ __author__ = 'mikhail91'
 
 import numpy
 import pandas
+from datapop import AccessProbabilityPrediction, NumberAccessPrediction, DataPreparation
 
-try:
-    from kernel_regression import KernelRegression
-except ImportError as e:
-    raise ImportError("Install kernel_regression from www or from 'Packages/' folder. ")
-
-# TODO: Better predictor
+# TODO: what about Tiers? what about number of replicas?
 
 class ReplicationPlacementStrategy(object):
 
-    def __init__(self, metadata=None, access_history=None, forecast_horizont=None):
-        self.metadata = metadata
-        self.access_history = access_history
-        self.forecast_horizont = forecast_horizont
-
-    def data_preprocessing(self, metadata, access_history, forecast_horizont):
+    def __init__(self, data=None, min_replicas=1, max_replicas=7):
         """
-        Data preprocessing for classification.
-        :param pandas.DataFrame metadata: metadata of LHCb datasets.
-        :param pandas.DataFrame access_history: access history of LHCb datasets.
-        :param pandas.DataFrame train_data, test_data, to_predict_data:
-        data for train, test and for the probability prediction.
+        For data replication and placement
+        :param pandas.DataFrame data: full data
+        :param int min_replicas: minimum number of datasets replicas
+        :param int max_replicas: maximum number of the datasets replicas
+        :return:
         """
-        # TODO: Why FirstUsage but not Creation_week?
-        # train data
-        train_selection = (metadata['Now'].values - \
-                          metadata['FirstUsage'].values > \
-                          2*forecast_horizont + 26) * (metadata['Storage'] == 'Disk')
-        train_access_history = access_history[train_selection]
-        train_metadata = metadata[train_selection]
 
-        train_first_used = train_metadata['Now'].values - \
-                           train_metadata['FirstUsage'].values - \
-                           2 * forecast_horizont
+        self.data = data
+        self.min_replicas = min_replicas
+        self.max_replicas = max_replicas
 
-        train_time_columns = \
-            train_access_history.drop('Name', 1).columns[:-2 * forecast_horizont]
-        train_data = train_access_history[['Name'] + list(train_time_columns)].copy()
-        train_data['first_used'] = train_first_used
-        train_data['Y'] = train_access_history.drop('Name', 1).values[:,
-                      -2*forecast_horizont:-forecast_horizont].mean(axis=1)
+        self.flag1 = 0
+        self.flag2 = 0
+        self.flag3 = 0
 
-        # test data
-        test_selection = (metadata['Now'].values - \
-                         metadata['FirstUsage'].values > \
-                         1*forecast_horizont + 26) * (metadata['Storage'] == 'Disk')
+    def get_combine_report(self, data):
+        """
+        Combine probability and prediction reports
+        :param pandas.DataFrame data: full data
+        :return: pandas.DataFrame: combine report
+        """
 
-        test_access_history = access_history[test_selection]
-        test_metadata = metadata[test_selection]
+        metadata, access_history = \
+            DataPreparation(data=data).preparation()
 
-        test_first_used = test_metadata['Now'].values - \
-                           test_metadata['FirstUsage'].values - \
-                           1 * forecast_horizont
+        proba_report = AccessProbabilityPrediction(metadata,
+                                                   access_history,
+                                                   forecast_horizont=26).predict()
 
-        test_time_columns = \
-            test_access_history.drop('Name', 1).columns[:-1 * forecast_horizont]
-        test_data = test_access_history[['Name'] + list(test_time_columns)].copy()
-        test_data['first_used'] = test_first_used
-        test_data['Y'] = test_access_history.drop('Name', 1).values[:,
-                     -forecast_horizont:].mean(axis=1)
+        predict_report = NumberAccessPrediction(metadata,
+                                                access_history,
+                                                forecast_horizont=13).predict()
 
-        # to predict data
-        to_predict_selection = (metadata['Now'].values - \
-                         metadata['FirstUsage'].values > 26) * \
-                               metadata['Storage'] == 'Disk'
-        to_predict_access_history = access_history[to_predict_selection]
-        to_predict_metadata = metadata[to_predict_selection]
+        report = pandas.merge(proba_report, predict_report, how='inner', on='Name')
 
-        to_predict_first_used = to_predict_metadata['Now'].values - \
-                           to_predict_metadata['FirstUsage'].values
+        report = pandas.merge(report, metadata[['Nb_Replicas', 'LFNSize', 'Name']], how='inner', on='Name')
 
-        to_predict_data = to_predict_access_history.copy()
-        to_predict_data['first_used'] = to_predict_first_used
-        return train_data, test_data, to_predict_data
-
-    def _static_predictior(self, access_time_series, first_used_list, window_to_past):
-
-        static_predictions_list = []
-        for dataset, first_used in zip(access_time_series, first_used_list):
-            index = min(window_to_past, first_used)
-            static_predicition = dataset[-index:].mean()
-            static_predictions_list.append(static_predicition)
-        return numpy.array(static_predictions_list)
+        return report
 
 
-    def static_predict(self, window_to_past):
 
-        train_data, test_data, to_predict_data = \
-            self.data_preprocessing(self.metadata, self.access_history, self.forecast_horizont)
 
-        # test
-        test_access_time_series = test_data.drop(['Name', 'Y', 'first_used'], 1).values
-        test_first_used_list = test_data['first_used'].values
-        Y_test = test_data['Y'].values
-        Y_pred_test = self._static_predictior(test_access_time_series,
-                                              test_first_used_list,
-                                              window_to_past)
-        # TODO: something wrong with errors.
-        rel_error_test = 100. * (Y_pred_test - Y_test)/(1. + Y_test)
-        mpe = rel_error_test.mean()
 
-        # to predict
-        to_predict_access_time_series = \
-            to_predict_data.drop(['Name', 'first_used'], 1).values
-        to_predict_first_used_list = \
-            to_predict_data['first_used'].values
-        Y_pred_to_predict = self._static_predictior(to_predict_access_time_series,
-                                                    to_predict_first_used_list,
-                                                    window_to_past)
 
-        # report
+
+
+    def _full_save_report(self, combine_report):
+        """
+        Get full save report
+        :param pandas.DataFrame combine_report: combination of the probability and the prediction reports
+        :return: pandas.DataFrame: full save report
+        """
+
         report = pandas.DataFrame()
-        report['Name'] = to_predict_data['Name']
-        report['Prediction'] = Y_pred_to_predict
-        report['mpe'] = mpe
-        return report, Y_pred_test, Y_test
 
-    def _max_reuse_distance(self, access_time_series):
-        max_reuse_distances_list = []
-        for dataset in access_time_series:
-            max_reuse_distance = 1
-            reuse_distance = 0
-            start_flag = 0
-            for access in dataset:
-                if access > 0:
-                    start_flag = 1
-                if start_flag == 1:
-                    reuse_distance += 1
-                if start_flag == 1 and access > 0:
-                    max_reuse_distance = max(max_reuse_distance, reuse_distance)
-                    reuse_distance = 1
-            max_reuse_distances_list.append(max_reuse_distance)
-        return numpy.array(max_reuse_distances_list)
+        values = combine_report.values
+        columns = combine_report.columns
 
-    def _total_fraquency_week(self, access_time_series):
-        return (1. * (access_time_series > 0)).sum(axis=1) + 1
+        for row_num in range(0, combine_report.shape[0]):
 
-    def _kernel_smoothing_predictor(self, access_time_series, first_used_list, window_to_past):
+            row_values = values[row_num, :]
+            row = pandas.DataFrame(data=[row_values], columns=columns)
 
-        kernel_predictions_list = []
-        max_reuse_distance_list = self._max_reuse_distance(access_time_series[:, -window_to_past:])
-        total_frequency_week_list = self._total_fraquency_week(access_time_series[:, -window_to_past:])
-        lists = zip(access_time_series, first_used_list, total_frequency_week_list)
-        for dataset, first_used, total_frequency_week in lists:
-            # index = min(window_to_past, first_used)
-            index = window_to_past
-            x_coords = numpy.array([[x_val] for x_val in range(0, index)])
-            y_values = dataset[-index:]
-            selection = total_frequency_week_list == total_frequency_week
-            windows = max_reuse_distance_list[selection]
-            window = int(numpy.percentile(windows, 80)) + 1
-            window = min(window, index)
-            kernel_regressor = KernelRegression(kernel="rbf", gamma=numpy.logspace(-2, 2, 10))
-            y_kernel = kernel_regressor.fit(x_coords, y_values).predict(x_coords)
-            #y_kernel = y_values
-            y_rolling_mean = pandas.rolling_mean(y_kernel, window=window, axis=1)
-            kernel_prediction = y_rolling_mean[-1]
-            kernel_predictions_list.append(kernel_prediction)
-        return numpy.array(kernel_predictions_list)
+            while row.Nb_Replicas.values[0] >= self.min_replicas + 1:
 
-    def kernel_smoothing_predict(self, window_to_past):
+                row['Metric'] = row.Prediction / row.Nb_Replicas
+                row['DecreaseReplicas'] = 1
+                report = pandas.concat([report, row])
+                row.Nb_Replicas -= 1
 
-        train_data, test_data, to_predict_data = \
-            self.data_preprocessing(self.metadata, self.access_history, self.forecast_horizont)
+        return report
 
-        # test
-        test_access_time_series = test_data.drop(['Name', 'Y', 'first_used'], 1).values
-        test_first_used_list = test_data['first_used'].values
-        Y_test = test_data['Y'].values
-        Y_pred_test = self._kernel_smoothing_predictor(test_access_time_series,
-                                                       test_first_used_list,
-                                                       window_to_past)
-        # TODO: something wrong with errors.
-        rel_error_test = 100. * (Y_pred_test - Y_test)/(1. + Y_test)
-        mpe = rel_error_test.mean()
+    def save_n_tb(self, n_tb=None):
+        """
+        Get recommendations to save n Tb of disk space
+        :param int n_tb: volume of disk space wanted to be saved
+        :return: pandas.DataFrame: recommendations report
+        """
 
-        # to predict
-        to_predict_access_time_series = \
-            to_predict_data.drop(['Name', 'first_used'], 1).values
-        to_predict_first_used_list = \
-            to_predict_data['first_used'].values
-        Y_pred_to_predict = self._kernel_smoothing_predictor(to_predict_access_time_series,
-                                                             to_predict_first_used_list,
-                                                             window_to_past)
+        if self.flag1 == 0:
+            combine_report = self.get_combine_report(self.data)
+            full_decrease_report = self._full_save_report(combine_report)
 
-        # report
+            full_decrease_report = full_decrease_report.sort(['Metric', 'Probability'])
+            self.full_save_report = full_decrease_report
+
+            self.saved_space = self.full_save_report.LFNSize.values.cumsum()
+
+        self.flag1 = 1
+
+        if n_tb == None:
+            report = self.full_save_report
+        else:
+            report = self.full_save_report[self.saved_space <= n_tb]
+
+        report = report.sort(['Metric', 'Probability'])
+
+        return report
+
+
+
+
+
+
+
+
+    def _full_fill_report(self, combine_report):
+        """
+        Get full fill report
+        :param pandas.DataFrame combine_report: combination of the probability and the prediction reports
+        :return: pandas.DataFrame: full fill report
+        """
+
         report = pandas.DataFrame()
-        report['Name'] = to_predict_data['Name']
-        report['Prediction'] = Y_pred_to_predict
-        report['mpe'] = mpe
-        return report, Y_pred_test, Y_test
+
+        values = combine_report.values
+        columns = combine_report.columns
+
+        for row_num in range(0, combine_report.shape[0]):
+
+            row_values = values[row_num, :]
+            row = pandas.DataFrame(data=[row_values], columns=columns)
+
+            while row.Nb_Replicas.values[0] <= self.max_replicas - 1:
+
+                row['Metric'] = row.Prediction / row.Nb_Replicas
+                row['IncreaseReplicas'] = 1
+                report = pandas.concat([report, row])
+                row.Nb_Replicas += 1
+
+        return report
+
+    def fill_n_tb(self, n_tb=None):
+        """
+        Get recommendations to fill n Tb of disk free space
+        :param int n_tb: volume of disk space wanted to be filled
+        :return: pandas.DataFrame: recommendations report
+        """
+
+        if self.flag2 == 0:
+            combine_report = self.get_combine_report(self.data)
+            full_fill_report = self._full_fill_report(combine_report)
+
+            full_fill_report = full_fill_report.sort(['Metric', 'Probability'], ascending=False)
+            self.full_fill_report = full_fill_report
+
+            self.fill_space = self.full_fill_report.LFNSize.values.cumsum()
+
+        self.flag2 = 1
+
+
+        if n_tb == None:
+            report = self.full_fill_report
+        else:
+            report = self.full_fill_report[self.fill_space <= n_tb]
+
+        report = report.sort(['Metric', 'Probability'], ascending=False)
+
+        return report
+
+
+
+
+
+
+    def clean_n_tb(self, n_tb, proba_threshold=0.01):
+        """
+        Get recommendations to remove n Tb from disk space
+        :param int n_tb: volume of disk space wanted to be cleaned
+        :return: pandas.DataFrame: recommendations report
+        """
+
+        if self.flag3 == 0:
+            self.combine_report = self.get_combine_report(self.data)
+
+            self.clean_space = (self.combine_report.LFNSize * self.combine_report.Nb_Replicas).values.cumsum()
+
+        self.flag3 = 1
+
+        if n_tb == None:
+            report = self.combine_report
+        else:
+            report = self.combine_report[self.clean_space <= n_tb]
+            
+        report = report.sort('Probability')
+
+        return report
+
+
