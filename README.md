@@ -41,9 +41,30 @@ The our method generates three reports which are contain recommendation of which
 
 ### Datapop
 
-Create new directory and clone this repository to the directory:
-'''
+Datapop is the python library.
+
+Create new directory and clone this repository to the directory. For that type in you terminal:
+```
 mkdir working_dir
 cd working_dir
 git clone https://github.com/yandexdataschool/DataPopularity
-'''
+```
+
+Go to the datapop directory:
+```
+cd DataPopularity/datapop
+pip install .
+```
+
+#### Requirements:
+
+```
+numpy==1.9.2
+scipy==0.15.1
+pandas==0.14.0
+scikit-learn==0.17
+```
+
+### Datapopserv
+
+Datapopserv is the web-service for the datapop library.
