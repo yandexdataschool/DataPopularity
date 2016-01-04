@@ -12,3 +12,5 @@ In this study we determine for which datasets number of replicas can be decrease
 ![LHCb Tier-1s grid](pic/data_grid.png)
 
 ## Method description
+
+![Method](pic/method.png)
