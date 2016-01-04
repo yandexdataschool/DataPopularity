@@ -99,3 +99,4 @@ datapop == 3.0.0
 
 ## Documentation
 
+Look at [howto](/howto) ipython notebooks.
