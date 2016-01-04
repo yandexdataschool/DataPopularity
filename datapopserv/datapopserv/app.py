@@ -1,6 +1,6 @@
 __author__ = 'mikhail91'
 
-# datapopserv 3.0
+# datapopserv 3.0.0
 
 from flask import Flask, request, send_from_directory
 from flask.ext.restful import reqparse, abort, Api, Resource
@@ -16,7 +16,8 @@ ALLOWED_EXTENSIONS = set(['csv'])
 app = Flask(__name__)
 api = Api(app)
 
-working_dir = os.environ.get('WORKING_DIR')
+#working_dir = os.environ.get('WORKING_DIR')
+working_dir = '~/'
 data_popularity_data = working_dir + '/'
 
 
@@ -163,4 +164,5 @@ api.add_resource(DataPopularityApi, '/')
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    #app.run(debug=False, host='0.0.0.0')
+    app.run()

@@ -1,5 +1,7 @@
 __author__ = 'Mikhail Hushchyn'
 
+# datapop 3.0.0
+
 try:
     from .DataPreparation import DataPreparation
 except:
@@ -17,35 +19,5 @@ except:
 
 try:
     from .ReplicationPlacementStrategy import ReplicationPlacementStrategy
-except:
-    pass
-
-try:
-    from .DataPopularityEstimator import DataPopularityEstimator
-except:
-    pass
-
-try:
-    from .DataIntensityPredictor import DataIntensityPredictor
-except:
-    pass
-
-try:
-    from .DataPlacementOptimizer import DataPlacementOptimizer
-except:
-    pass
-
-try:
-    from .DataBase import DataBase
-except:
-    pass
-
-try:
-    from .Performance import Performance
-except:
-    pass
-
-try:
-    from .Filters import Filters
 except:
     pass
