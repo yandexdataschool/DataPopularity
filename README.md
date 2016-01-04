@@ -82,7 +82,7 @@ cd DataPopularity/datapopserv
 pip install .
 ```
 
-To run the service on the local host http://127.0.0.1:5000/:
+To run the service on host http://0.0.0.0:5000/:
 ```
 export WORKING_DIR='/path/to/your/service_working_dir'
 cd datapopserv
