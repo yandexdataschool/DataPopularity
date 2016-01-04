@@ -68,3 +68,34 @@ scikit-learn==0.17
 ### Datapopserv
 
 Datapopserv is the web-service for the datapop library.
+
+Create new directory and clone this repository to the directory. For that type in you terminal:
+```
+mkdir working_dir
+cd working_dir
+git clone https://github.com/yandexdataschool/DataPopularity
+```
+
+Go to the datapopserv directory:
+```
+cd DataPopularity/datapopserv
+pip install .
+```
+
+To run the service on the local host http://127.0.0.1:5000/:
+```
+export WORKING_DIR='/path/to/your/service_working_dir'
+cd datapopserv
+python app.py
+```
+
+#### Requirements:
+
+```
+flask == 0.10.1
+flask-restful == 0.3.2
+datapop == 3.0.0
+```
+
+## Documentation
+
