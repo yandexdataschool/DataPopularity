@@ -13,4 +13,8 @@ In this study we determine for which datasets number of replicas can be decrease
 
 ## Method description
 
+### General concept
+
+Using log files we predict probabilities that the datasets will be accessed in long-term future (6  months, 1 year) using machine learning algorithms. Moreover, time series analysis algorithms are used to predict the datasests number of accesses in short-term future (1 week, 1 month). Based on the probabilities and the the predicted number of accesses we determine which datasets number of replicas should be increased or decreased first and which datasets can be removed from disk.
+
 ![Method](pic/method.png)
