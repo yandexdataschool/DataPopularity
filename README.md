@@ -40,3 +40,10 @@ The our method generates three reports which are contain recommendation of which
 ## Installation
 
 ### Datapop
+
+Create new directory and clone this repository to the directory:
+'''
+mkdir working_dir
+cd working_dir
+git clone https://github.com/yandexdataschool/DataPopularity
+'''
