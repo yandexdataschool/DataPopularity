@@ -10,3 +10,5 @@ Each Tier-1 has CPUs, disk and tape storages. The tapes are used for archiving t
 In this study we determine for which datasets number of replicas can be decreased or increased, which datasets likely will not be used in ruture and can be removed from disks.
 
 ![LHCb Tier-1s grid](pic/data_grid.png)
+
+## Method description
