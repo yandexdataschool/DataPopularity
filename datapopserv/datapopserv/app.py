@@ -16,8 +16,7 @@ ALLOWED_EXTENSIONS = set(['csv'])
 app = Flask(__name__)
 api = Api(app)
 
-#working_dir = os.environ.get('WORKING_DIR')
-working_dir = '~/'
+working_dir = os.environ.get('WORKING_DIR')
 data_popularity_data = working_dir + '/'
 
 
