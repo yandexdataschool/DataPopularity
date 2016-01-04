@@ -2,7 +2,7 @@ from __future__ import division, print_function, absolute_import
 
 __author__ = 'mikhail91'
 
-#version 3.0
+# datapop 3.0.0
 
 import numpy
 import pandas
