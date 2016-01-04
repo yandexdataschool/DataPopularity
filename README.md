@@ -1,20 +1,11 @@
 # DataPopularity
 
 ## Introduction
-The LHCb collaboration is one of the four major experiments at the Large Hadron Collider at CERN. The detector, as well as the Monte Carlo simulations of physics events, create PBs of data every year. This data is kept on disk and tape storage systems. Disks are used for storing data used by physicists for analysis. They are much faster than tapes, but are way more expensive and hence disk space is limited. Therefore it is highly important to identify which datasets should be kept on disk and which ones should only be kept as archives on tape. The system presented here is designed to select the datasets which may be used in the future
-and thus should remain on disk. Input information to the system are the dataset usage history and dataset metadata (size, type, configuration etc.).
+The LHCb collaboration is one of the four major experiments at the Large Hadron Collider at CERN. The detector, as well as the Monte Carlo simulations of physics events, create PBs of data every year. The data needs to be distributed to multiple locations to be available for thousands researchers around the world. For this the LHCb data grid is used. 
 
-## Method Descriprion
-The method was presented on [CHEP2015](https://indico.cern.ch/event/304944/session/3/contribution/303/attachments/578882/797086/DataPopularityPresentation.pdf). This presentation contains the method idea and its parameters description. Please, view this presentation firstly.
+The LHCb data grid has a Tier-1 center at CERN and six aditional regional Tier-1 and 14 Tier-2 centers around the world. The Tier-1s are the most important because they are responsible for all the production-processing phases associated with the real data. The Tier-1s are used for generating RAW data, reconstruction, stripping and user analysis. The center at CERN is also used for generating RAW data. The Tier-2s are used for Monte-Carlo production which is then uploaded to the Tier-1s.
 
-## Structure
-**Datapop** is the python library. This is an implementation of the method of the disk storage mangement for the LHCb. Library consists of two parts: **service** runned at the server and **client**
+Each Tier-1 has CPUs, disk and tape storages. The tapes are used for archiving the data. The disks keep data which is currently used in user analysis. To meet the needs for scalability, fast access and user collaboration, each dataset has several replicas distributed over the Tier-1s. This provides faster access to datasets for users and the preservation of a network bandwidth because replicas can be placed close to centers where users need them. But creation of replicas is bound by the availability of storage within centers.
 
-**Datapopserv** is the data popularity service for the method. 
-This service can be launched and can be used instead of the datapop library. Datapopserv uses curl requets.
+In this study we determine for which datasets number of replicas can be decreased or increased, which datasets likely will not be used in ruture and can be removed from disks.
 
-**Datapopclient** is python wrapper for API of data popularity service. The wrapper provides the convenient way to work with service.
-
-Look at [howto](https://github.com/yandexdataschool/DataPopularity/tree/master/howto) for the more details.
-
-Sample files processed by datapop you can find [in howto](https://github.com/yandexdataschool/DataPopularity/blob/master/howto/Data/popularity-728days.csv)
