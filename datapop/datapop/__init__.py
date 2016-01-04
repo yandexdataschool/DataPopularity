@@ -11,6 +11,16 @@ except:
     pass
 
 try:
+    from .NumberAccessPrediction import NumberAccessPrediction
+except:
+    pass
+
+try:
+    from .ReplicationPlacementStrategy import ReplicationPlacementStrategy
+except:
+    pass
+
+try:
     from .DataPopularityEstimator import DataPopularityEstimator
 except:
     pass
