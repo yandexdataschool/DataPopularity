@@ -36,3 +36,7 @@ Increasing/decreasing number of replicas and removing the datasets can be done s
 ### Report
 
 The our method generates three reports which are contain recommendation of which datasets number of replicas can be decreased to save N Tb or increased to fill N Tb, which datasets likely will not be used in ruture and can be removed from disks to save N Tb.
+
+## Installation
+
+### Datapop
