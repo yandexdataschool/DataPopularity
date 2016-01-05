@@ -53,6 +53,39 @@ class ReplicationPlacementStrategy(object):
 
         return report
 
+    def get_full_combine_report(self, data):
+        """
+        Combine probability and prediction reports
+        :param pandas.DataFrame data: full data
+        :return: pandas.DataFrame: combine report
+        """
+
+        metadata, access_history = \
+            DataPreparation(data=data).preparation()
+
+        app = AccessProbabilityPrediction(metadata,
+                                          access_history,
+                                          forecast_horizont=26)
+
+        proba_report = app.predict()
+
+        _, _, features = app.data_preprocessing(app.metadata,
+                                          app.access_history,
+                                          app.forecast_horizont)
+
+
+        predict_report = NumberAccessPrediction(metadata,
+                                                access_history,
+                                                forecast_horizont=13).predict()
+
+        report = pandas.merge(proba_report, predict_report, how='inner', on='Name')
+
+        report = pandas.merge(report, metadata[['Nb_Replicas', 'LFNSize', 'Name']], how='inner', on='Name')
+
+        report = pandas.merge(report, features, how='inner', on='Name')
+
+        return report
+
 
 
 
@@ -179,7 +212,7 @@ class ReplicationPlacementStrategy(object):
 
 
 
-    def clean_n_tb(self, n_tb, proba_threshold=0.01):
+    def clean_n_tb(self, n_tb):
         """
         Get recommendations to remove n Tb from disk space
         :param int n_tb: volume of disk space wanted to be cleaned
@@ -188,6 +221,7 @@ class ReplicationPlacementStrategy(object):
 
         if self.flag3 == 0:
             self.combine_report = self.get_combine_report(self.data)
+            self.combine_report = self.combine_report.sort('Probability')
 
             self.clean_space = (self.combine_report.LFNSize * self.combine_report.Nb_Replicas).values.cumsum()
 
