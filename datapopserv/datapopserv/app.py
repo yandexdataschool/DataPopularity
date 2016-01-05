@@ -81,7 +81,6 @@ class DataPopularityApi(Resource):
         params = {}
         params['mode'] = get_params['mode'] if get_params.has_key('mode') else 'save'
         params['n_tb'] = get_params['n_tb'] if get_params.has_key('n_tb') else None
-        params['proba_threshold'] = get_params['proba_threshold'] if get_params.has_key('proba_threshold') else 0.01
         params['min_replicas'] = get_params['min_replicas'] if get_params.has_key('min_replicas') else 1
         params['max_replicas'] = get_params['max_replicas'] if get_params.has_key('max_replicas') else 7
 
@@ -123,10 +122,13 @@ class DataPopularityApi(Resource):
             report = rps.fill_n_tb(params['n_tb'])
 
         elif params['mode'] == 'clean':
-            report = rps.clean_n_tb(params['n_tb'], params['proba_threshold'])
+            report = rps.clean_n_tb(params['n_tb'])
 
         elif params['mode'] == 'combine':
             report = rps.get_combine_report(data)
+
+        elif params['mode'] == 'full_combine':
+            report = rps.get_full_combine_report(data)
 
         report.to_csv(data_folder + '/report.csv')
 
