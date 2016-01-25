@@ -15,7 +15,8 @@ def tsa_brown(Y, alpha):
     :return: numpy.array the time series forecast,
     numpy.array the forecast error.
     """
-    Y_predict = [Y[0]]
+    #Y_predict = [Y[0]]
+    Y_predict = [Y.mean()]
     predict_errors = []
     for y_curr in Y:
         y_pred_prev = Y_predict[-1]
@@ -80,13 +81,13 @@ class NumberAccessPrediction(object):
         # TODO: Why FirstUsage but not Creation_week?
         # to predict data
         to_predict_selection = (metadata['Now'].values - \
-                         metadata['FirstUsage'].values > 26) * \
+                         metadata['Creation_week'].values > 26) * \
                                metadata['Storage'] == 'Disk'
         to_predict_access_history = access_history[to_predict_selection]
         to_predict_metadata = metadata[to_predict_selection]
 
         to_predict_first_used = to_predict_metadata['Now'].values - \
-                           to_predict_metadata['FirstUsage'].values
+                           to_predict_metadata['Creation_week'].values
 
         to_predict_data = to_predict_access_history.copy()
         to_predict_data['first_used'] = to_predict_first_used
