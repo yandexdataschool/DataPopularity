@@ -128,8 +128,8 @@ class AccessProbabilityPrediction (object):
 
         # train data
         train_selection = (metadata['Now'].values - \
-                          metadata['FirstUsage'].values > \
-                          2*forecast_horizont) * (metadata['Storage'] == 'Disk')
+                          metadata['Creation_week'].values > \
+                          2*forecast_horizont) * (metadata['Storage'] == 'Disk')# * (metadata['FirstUsage'].values != 0)
         train_access_history = access_history[train_selection]
         train_metadata = metadata[train_selection]
 
@@ -141,9 +141,13 @@ class AccessProbabilityPrediction (object):
         train_frequency_week = self.frequency_week(train_access_time_series)
         train_size = train_metadata['LFNSize'].values
         train_nblfn = train_metadata['NbLFN'].values
-        train_first_used = train_metadata['Now'].values - \
-                           train_metadata['FirstUsage'].values - \
-                           2 * forecast_horizont
+        train_first_used_one = train_metadata['Now'].values - \
+                               train_metadata['FirstUsage'].values - \
+                               2 * forecast_horizont
+        train_first_used_two = train_metadata['Now'].values - \
+                               2 * forecast_horizont
+        train_first_used = train_first_used_one * (train_first_used_one >= 0) + \
+                           train_first_used_two * (train_first_used_one < 0)
         train_creation = train_metadata['Now'].values - \
                            train_metadata['Creation_week'].values - \
                            2 * forecast_horizont
@@ -167,8 +171,8 @@ class AccessProbabilityPrediction (object):
 
         # test data
         test_selection = (metadata['Now'].values - \
-                         metadata['FirstUsage'].values > \
-                         1*forecast_horizont) * (metadata['Storage'] == 'Disk')
+                         metadata['Creation_week'].values > \
+                         1*forecast_horizont) * (metadata['Storage'] == 'Disk')# * (metadata['FirstUsage'].values != 0)
 
         test_access_history = access_history[test_selection]
         test_metadata = metadata[test_selection]
@@ -181,9 +185,13 @@ class AccessProbabilityPrediction (object):
         test_frequency_week = self.frequency_week(test_access_time_series)
         test_size = test_metadata['LFNSize'].values
         test_nblfn = test_metadata['NbLFN'].values
-        test_first_used = test_metadata['Now'].values - \
-                          test_metadata['FirstUsage'].values - \
-                          forecast_horizont
+        test_first_used_one = test_metadata['Now'].values - \
+                               test_metadata['FirstUsage'].values - \
+                               1 * forecast_horizont
+        test_first_used_two = test_metadata['Now'].values - \
+                               1 * forecast_horizont
+        test_first_used = test_first_used_one * (test_first_used_one >= 0) + \
+                           test_first_used_two * (test_first_used_one < 0)
         test_creation = test_metadata['Now'].values - \
                           test_metadata['Creation_week'].values - \
                           forecast_horizont
@@ -206,7 +214,7 @@ class AccessProbabilityPrediction (object):
                      -forecast_horizont:].sum(axis=1) > 0)
 
         # to predict data
-        to_predict_selection = metadata['Storage'] == 'Disk'
+        to_predict_selection = (metadata['Storage'] == 'Disk')# * (metadata['FirstUsage'].values != 0)
         to_predict_access_history = access_history[to_predict_selection]
         to_predict_metadata = metadata[to_predict_selection]
 
@@ -256,8 +264,8 @@ class AccessProbabilityPrediction (object):
         Y_test = test_data['Y'].values
         X_to_predict = to_predict_data.drop('Name', 1).values
 
-        rfc = RandomForestClassifier(n_estimators=200,
-                                     max_features='auto',
+        rfc = RandomForestClassifier(n_estimators=500,
+                                     max_features=None,
                                      max_depth=5,
                                      class_weight='balanced')
 
