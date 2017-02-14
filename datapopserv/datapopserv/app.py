@@ -111,7 +111,7 @@ class DataPopularityApi(Resource):
         data_folder = data_popularity_data + session_id
 
         data_path = data_folder + '/data.csv'
-        data = pd.read_csv(data_path)
+        data = pd.read_csv(data_path, sep=';')
 
         rps = ReplicationPlacementStrategy(data, params['min_replicas'], params['max_replicas'])
 
