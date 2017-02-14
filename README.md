@@ -97,6 +97,14 @@ flask-restful == 0.3.2
 datapop == 3.0.0
 ```
 
+## Dacker instruction
+
+To run the data popularity service on the localhost http://0.0.0.0:5000/ using docker run the following command:
+
+```bash
+docker run -p 5000:5000 hushchynmikhail/datapopserv python app.py
+```
+
 ## Documentation
 
 Look at [howto](/howto) ipython notebooks.
