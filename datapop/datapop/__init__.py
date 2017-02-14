@@ -1,31 +1,23 @@
 __author__ = 'Mikhail Hushchyn'
 
+# datapop 3.0.0
+
 try:
-    from .DataPopularityEstimator import DataPopularityEstimator
+    from .DataPreparation import DataPreparation
 except:
     pass
 
 try:
-    from .DataIntensityPredictor import DataIntensityPredictor
+    from .AccessProbabilityPrediction import AccessProbabilityPrediction
 except:
     pass
 
 try:
-    from .DataPlacementOptimizer import DataPlacementOptimizer
+    from .NumberAccessPrediction import NumberAccessPrediction
 except:
     pass
 
 try:
-    from .DataBase import DataBase
-except:
-    pass
-
-try:
-    from .Performance import Performance
-except:
-    pass
-
-try:
-    from .Filters import Filters
+    from .ReplicationPlacementStrategy import ReplicationPlacementStrategy
 except:
     pass
