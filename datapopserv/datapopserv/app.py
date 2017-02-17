@@ -169,8 +169,6 @@ if __name__ == '__main__':
 
     debug = False
 
-    argv = sys.argv[1:]
-
     msg = '''Run Data Popularity Service\n\
     Usage:\n\
       python app.py [options] \n\
