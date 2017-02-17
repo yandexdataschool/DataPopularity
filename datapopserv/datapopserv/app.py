@@ -181,8 +181,8 @@ if __name__ == '__main__':
       '''
 
     try:
-        opts, args = getopt.getopt(argv, "h:d:",
-                                   ["help", "debug="])
+        opts, args = getopt.getopt(argv, "hd",
+                                   ["help", "debug"])
     except getopt.GetoptError:
         print "Wrong options were used. Please, read the following help:\n"
         print msg
