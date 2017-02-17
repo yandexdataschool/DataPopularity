@@ -13,6 +13,10 @@ RUN sudo apt-get install -y git
 # Clone repository
 WORKDIR home/
 RUN git clone https://github.com/yandexdataschool/DataPopularity.git
+WORKDIR DataPopularity/
+RUN git pull
+RUN git checkout develop
+WORKDIR /home/
 
 # Datapop installation
 RUN sudo pip install DataPopularity/datapop
