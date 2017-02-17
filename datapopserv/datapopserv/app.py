@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import os
 import ast
+import getopt, sys
 
 ALLOWED_EXTENSIONS = set(['csv'])
 
@@ -165,4 +166,37 @@ api.add_resource(DataPopularityApi, '/')
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+
+    debug = False
+
+    argv = sys.argv[1:]
+
+    msg = '''Run Data Popularity Service\n\
+    Usage:\n\
+      python app.py [options] \n\
+    Example: \n\
+      python app.py -d\n\
+    General options:\n\
+      -d  --debug          : Run the service in debug mode. \n\
+      '''
+
+    try:
+        opts, args = getopt.getopt(argv, "hm:d:",
+                                   ["help", "debug="])
+    except getopt.GetoptError:
+        print "Wrong options were used. Please, read the following help:\n"
+        print msg
+        sys.exit(2)
+
+
+    for opt, arg in opts:
+
+        if opt in ('-h', "--help"):
+            print msg
+            sys.exit()
+
+        elif opt in ("-d", "--debug"):
+            debug = True
+
+
+    app.run(debug=debug, host='0.0.0.0')
