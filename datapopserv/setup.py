@@ -10,7 +10,7 @@ setup(
     author_email='mikhail91@yandex-team.ru',
     description='Api service for the datapop library.',
     install_requires=[
-        'flask == 0.10.1',
+        'flask >= 0.10.1',
         'flask-restful == 0.3.2',
         'datapop == 3.0.0'
     ],
