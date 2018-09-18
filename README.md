@@ -92,7 +92,7 @@ python app.py
 #### Requirements:
 
 ```
-flask == 0.10.1
+flask >= 0.10.1
 flask-restful == 0.3.2
 datapop == 3.0.0
 ```
